@@ -7270,12 +7270,6 @@ do
         if ultimate.moveType == MOVETYPE_LADDER then return false end
         if ultimate.moveType == MOVETYPE_NOCLIP then return false end
         if me:WaterLevel() > 0 then return false end
-        if ultimate.cfg.vars["Yaw base"] == 2 then
-            if not ultimate.aatarget then return false end
-            if IsValid(ultimate.aatarget) then 
-                if ultimate.aatarget:IsDormant() then return false end
-            end
-        end
         if ultimate.cfg.binds["Anti aim"] != 0 and not ultimate.IsKeyDown(ultimate.cfg.binds["Anti aim"]) then
             return false
         end
