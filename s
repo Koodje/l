@@ -6771,7 +6771,7 @@ function ultimate.CircleStrafe( cmd )
 	if ( ultimate.cstrafe_dir < 2 ) then
 	
 		local velocity = me:GetAbsVelocity()
-		local viewangles = cmd:GetViewAngles()
+		local viewangles = Angle(ultimate.SilentAngle.x, ultimate.SilentAngle.y, ultimate.SilentAngle.z)
 		
 		viewangles.y = math_NormalizeAngle( math_deg( math_atan2( velocity.y, velocity.x ) ) + angle )
 		
