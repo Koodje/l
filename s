@@ -6726,7 +6726,7 @@ end
 function ultimate.CircleStrafe( cmd )
 
 	local angle = 0
-	
+	local viewangles = Angle( ultimate.SilentAngle.x, ultimate.SilentAngle.y, ultimate.SilentAngle.z )
 	while ( ultimate.cstrafe_dir < 2 ) do
 	
 		angle = 0
@@ -6749,7 +6749,7 @@ function ultimate.CircleStrafe( cmd )
 			
 			end
 
-			if ( ultimate.PredictMovement( cmd:GetViewAngles(), ultimate.cstrafe_dir, angle ) ) then
+			if ( ultimate.PredictMovement( viewangles, ultimate.cstrafe_dir, angle ) ) then
 			
 				path_found = true
 				break
@@ -6771,15 +6771,11 @@ function ultimate.CircleStrafe( cmd )
 	if ( ultimate.cstrafe_dir < 2 ) then
 	
 		local velocity = me:GetAbsVelocity()
-		local viewangles = Angle(ultimate.SilentAngle.x, ultimate.SilentAngle.y, ultimate.SilentAngle.z)
-		
 		viewangles.y = math_NormalizeAngle( math_deg( math_atan2( velocity.y, velocity.x ) ) + angle )
 		
 		cmd:SetViewAngles( viewangles )
-		cmd:SetSideMove( ( ultimate.cstrafe_dir == 1 ) && -10000 || 10000 )
-	
+		cmd:SetSideMove( ( ultimate.cstrafe_dir == 1 ) && -400 || 400 )
 	else
-	
 		ultimate.cstrafe_dir = 0
 	
 	end
