@@ -13636,42 +13636,6 @@ do
             end
         end
 
-        if ultimate.cfg.vars["Knifebot"] then
-            if ultimate.cfg.vars["Knifebot fov"] then
-                if ultimate.activeWeaponClass then
-                    local tbl = ultimate.knifes[1]
-                    local canuse = false 
-                    for i = 1, #ultimate.knifes do    
-                        if StartsWith(ultimate.activeWeaponClass, ultimate.knifes[i].str) then     
-                            canuse = true         
-                            tbl = ultimate.knifes[i]        
-                            break
-                        end
-                    end 
-            
-                    if not canuse then return false, false end
-            
-                    local knifemode = ultimate.cfg.vars["Knifebot mode"]
-                    local radius = 0
-            
-                    if knifemode == 1 then
-                        radius = math_sqrt(tbl.rightdist)
-                    elseif knifemode == 2 then
-                        radius = math_sqrt(tbl.leftdist)
-                    elseif knifemode == 3 then
-                        radius = math_sqrt(tbl.rightdist)
-                    end
-
-                    if ultimate.cfg.vars["Figureknifebot"] == 1 then
-                        cam_Start3D2D(me:GetShootPos() - Vector(0,0,15), Angle(0, 0, 0), 1)       
-                            surface.DrawCircle(0, 0, radius,string_ToColor(ultimate.cfg.colors["Knifebot fov"]))
-                        cam_End3D2D()
-                    elseif ultimate.cfg.vars["Figureknifebot"] == 2 then
-                        render.DrawWireframeSphere( me:GetShootPos(), radius, 12, 12, color, false)
-                    end
-                end
-            end
-        end
 
         if ultimate.cfg.vars["Bolt Tracers"] then
             local bolts = {}
@@ -13828,6 +13792,43 @@ do
         end
 
 
+        if ultimate.cfg.vars["Knifebot"] then
+            if ultimate.cfg.vars["Knifebot fov"] then
+                if ultimate.activeWeaponClass then
+                    local tbl = ultimate.knifes[1]
+                    local canuse = false 
+                    for i = 1, #ultimate.knifes do    
+                        if StartsWith(ultimate.activeWeaponClass, ultimate.knifes[i].str) then     
+                            canuse = true         
+                            tbl = ultimate.knifes[i]        
+                            break
+                        end
+                    end 
+            
+                    if not canuse then return false, false end
+            
+                    local knifemode = ultimate.cfg.vars["Knifebot mode"]
+                    local radius = 0
+            
+                    if knifemode == 1 then
+                        radius = math_sqrt(tbl.rightdist)
+                    elseif knifemode == 2 then
+                        radius = math_sqrt(tbl.leftdist)
+                    elseif knifemode == 3 then
+                        radius = math_sqrt(tbl.rightdist)
+                    end
+
+                    if ultimate.cfg.vars["Figureknifebot"] == 1 then
+                        cam_Start3D2D(me:GetShootPos() - Vector(0,0,15), Angle(0, 0, 0), 1)       
+                            surface.DrawCircle(0, 0, radius,string_ToColor(ultimate.cfg.colors["Knifebot fov"]))
+                        cam_End3D2D()
+                    elseif ultimate.cfg.vars["Figureknifebot"] == 2 then
+                        render.DrawWireframeSphere( me:GetShootPos(), radius, 12, 12, color, false)
+                    end
+                end
+            end
+        end
+        
     end 
 end
 
