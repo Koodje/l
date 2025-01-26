@@ -13545,9 +13545,11 @@ do
                             cam_IgnoreZ( false )
 
                         elseif view == 2 then
-                            cam_IgnoreZ( true )
-                                surface.DrawCircle(0, 0, ultimate.radius, Color(255,255,255,ultimate.alphasound)) 
-                            cam_IgnoreZ( false )
+                            cam_Start3D2D(pos, Angle(0, 0, 0), 1)
+                                cam_IgnoreZ( true )
+                                    surface.DrawCircle(0, 0, ultimate.radius, Color(255,255,255,ultimate.alphasound)) 
+                                cam_IgnoreZ( false )
+                            Cam_End3D2D()
                         end
                     end
                 end
