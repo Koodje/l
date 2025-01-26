@@ -709,11 +709,15 @@ ultimate.cfg.vars["Fake lag options-Disable on ladder"] = false
 ultimate.cfg.vars["Fake lag options-Disable in attack"] = false
 ultimate.cfg.vars["Fake lag options-Randomise"] = false
 ultimate.cfg.vars["Fake lag options-In Air"] = false
+ultimate.cfg.vars["Fake lag options-In Ground"] = false
+
+ultimate.cfg.binds["FL on key"] = 0
 ultimate.cfg.vars["Lag mode"] = 1
 ultimate.cfg.vars["Lag limit"] = 1
 ultimate.cfg.vars["Lag randomisation"] = 1
 ultimate.cfg.vars["Fake duck"] = false
 ultimate.cfg.binds["Fake duck"] = 0
+
 
 
 
@@ -1032,6 +1036,16 @@ ultimate.cfg.colors["Self hitbox"] = "0 255 0 255"
 ultimate.cfg.vars["Fresnel minimum illum"] = 0
 ultimate.cfg.vars["Fresnel maximum illum"] = 1
 ultimate.cfg.vars["Fresnel exponent"] = 1
+ultimate.cfg.colors["selfillumtint"] = "1 1 1 255"
+
+
+ultimate.cfg.colors["phongtint"] = "255 255 255 255"
+ultimate.cfg.vars["phongexponent"] = 0.2
+ultimate.cfg.vars["phongboost"] = 0.35
+
+
+ultimate.cfg.colors["cloakcolortint"] = "255 255 255 255"
+ultimate.cfg.vars["cloakfactor"] = 0.3
 
 // Outlines
 
@@ -1073,6 +1087,7 @@ ultimate.cfg.vars["Owner Tracers"] = false
 
 ultimate.cfg.vars["Bullet Impacts"] = false
 ultimate.cfg.colors["Bullet Impacts"] = "255 155 155 255"
+ultimate.cfg.vars["Bullet impact sprite"] = false
 
 ultimate.cfg.vars["Bolt Tracers"] = false 
 ultimate.cfg.colors["Bolt Tracers"] = "1 255 155 255"
@@ -3680,7 +3695,8 @@ ultimate.spfuncs[9] = function()
     ultimate.ui.Slider( ultimate.ui.SettingsPan, "Random min","Lag randomisation",1,23,0 )
     
     ultimate.ui.ComboBox( ultimate.ui.SettingsPan, "Lag mode", "Lag mode", {"Static","Adaptive","Hybrid"})
-    ultimate.ui.MultiCombo( ultimate.ui.SettingsPan, "Fake lag options", {"Disable on ladder","Disable in attack","Randomise","In Air"} )
+    ultimate.ui.MultiCombo( ultimate.ui.SettingsPan, "Fake lag options", {"Disable on ladder","Disable in attack","Randomise","In Air","In Ground"} )
+    
     
 end
 
@@ -3811,9 +3827,10 @@ function ultimate.tabs.Rage()
 
     ultimate.itemPanelB( "",1,345, funcresolver )
 
-    local p = ultimate.itemPanel( "Fake lag",2,80):GetItemPanel()
+    local p = ultimate.itemPanel( "Fake lag",2,100):GetItemPanel()
 
     ultimate.ui.CheckBox( p, "Fake lag", "Fake lag", false, false, false, ultimate.spfuncs[9] )
+    ultimate.ui.Label( p, "Fake lag on key", function( p ) ultimate.ui.Binder( "FL on key", p) end )
     ultimate.ui.CheckBox( p, "Fake duck", "Fake duck", false, true )
 
     local p = ultimate.itemPanel( "Visualisation", 2,120 ):GetItemPanel()
@@ -3823,7 +3840,7 @@ function ultimate.tabs.Rage()
     ultimate.ui.CheckBox( p, "Fake angle hitbox", "Anti aim hitbox", false, false, true )
     ultimate.ui.CheckBox( p, "Fake angle outline", "Fake outline", false, false, true )
  
-
+    
 
     local p = ultimate.itemPanel( "Sequence", 2, 195 ):GetItemPanel()
 
@@ -4161,7 +4178,11 @@ ultimate.spfuncs[41] = function()
     
 end
 
-
+ultimate.spfuncs[53] = function()
+    ultimate.ui.SettingsPan:SetSize(250,26)
+    
+    ultimate.ui.CheckBox( ultimate.ui.SettingsPan, "Sprite", "Bullet impact sprite" )
+end
 
 function ultimate.tabs.Render()
 
@@ -4183,9 +4204,9 @@ function ultimate.tabs.Render()
     ultimate.ui.CheckBox( p, "Self outline", "Self outline", false, false, true,ultimate.spfuncs[40] )
     ultimate.ui.ComboBox( p, "Style", "Outline style", { "Default", "Subtractive", "Additive" } )
 
-    local p = ultimate.itemPanel("Material customisation",1,150):GetItemPanel()
+    local p = ultimate.itemPanel("Material customisation",1,340):GetItemPanel()
 
-    ultimate.ui.Slider( p, "Min illumination", "Fresnel minimum illum", 0, 1, 1, function( v )
+    ultimate.ui.Slider( p, "Min illumination", "Fresnel minimum illum", 0, 1, 2, function( v )
         local v1, v2, v3, v4 = ultimate.chamMats.vis[3], ultimate.chamMats.vis[4], ultimate.chamMats.invis[3], ultimate.chamMats.invis[3]
 
         v1:SetVector( "$selfIllumFresnelMinMaxExp", Vector( v, ultimate.cfg.vars["Fresnel maximum illum"], ultimate.cfg.vars["Fresnel exponent"] ) )
@@ -4194,7 +4215,7 @@ function ultimate.tabs.Render()
         v4:SetVector( "$selfIllumFresnelMinMaxExp", Vector( v, ultimate.cfg.vars["Fresnel maximum illum"], ultimate.cfg.vars["Fresnel exponent"] ) )
     end )
     
-    ultimate.ui.Slider( p, "Max illumination", "Fresnel maximum illum", 0, 1, 1, function( v )
+    ultimate.ui.Slider( p, "Max illumination", "Fresnel maximum illum", 0, 1, 2, function( v )
         local v1, v2, v3, v4 = ultimate.chamMats.vis[3], ultimate.chamMats.vis[4], ultimate.chamMats.invis[3], ultimate.chamMats.invis[3]
 
         v1:SetVector( "$selfIllumFresnelMinMaxExp", Vector( ultimate.cfg.vars["Fresnel minimum illum"], v, ultimate.cfg.vars["Fresnel exponent"] ) )
@@ -4203,7 +4224,7 @@ function ultimate.tabs.Render()
         v4:SetVector( "$selfIllumFresnelMinMaxExp", Vector( ultimate.cfg.vars["Fresnel minimum illum"], v, ultimate.cfg.vars["Fresnel exponent"] ) )
     end )
  
-    ultimate.ui.Slider( p, "Fresnel exponent", "Fresnel exponent", 0, 1, 1, function( v )
+    ultimate.ui.Slider( p, "Fresnel exponent", "Fresnel exponent", 0, 1, 2, function( v )
         local v1, v2, v3, v4 = ultimate.chamMats.vis[3], ultimate.chamMats.vis[4], ultimate.chamMats.invis[3], ultimate.chamMats.invis[3]
 
         v1:SetVector( "$selfIllumFresnelMinMaxExp", Vector( ultimate.cfg.vars["Fresnel minimum illum"], ultimate.cfg.vars["Fresnel maximum illum"], v ) )
@@ -4211,6 +4232,53 @@ function ultimate.tabs.Render()
         v3:SetVector( "$selfIllumFresnelMinMaxExp", Vector( ultimate.cfg.vars["Fresnel minimum illum"], ultimate.cfg.vars["Fresnel maximum illum"], v ) )
         v4:SetVector( "$selfIllumFresnelMinMaxExp", Vector( ultimate.cfg.vars["Fresnel minimum illum"], ultimate.cfg.vars["Fresnel maximum illum"], v ) )
     end )
+
+    ultimate.ui.Label( p, "Selfillum tint", function( p ) ultimate.ui.ColorPicker( "selfillumtint", p ) 
+        local v1, v2, v3, v4 = ultimate.chamMats.vis[3], ultimate.chamMats.vis[4], ultimate.chamMats.invis[3], ultimate.chamMats.invis[3]
+        local col = string_ToColor(ultimate.cfg.colors["selfillumtint"])
+        v1:SetVector( "$selfillumtint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
+        v2:SetVector( "$selfillumtint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
+        v3:SetVector( "$selfillumtint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
+        v4:SetVector( "$selfillumtint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
+    end)
+
+
+    ultimate.ui.Slider( p, "Phong exponent", "phongexponent", 0, 1, 2, function( v )
+        local v1, v2 = ultimate.chamMats.vis[12], ultimate.chamMats.invis[12]
+
+        v1:SetFloat( "$phongexponent", ultimate.cfg.vars["phongexponent"])
+        v2:SetFloat( "$phongexponent", ultimate.cfg.vars["phongexponent"])
+    end )
+
+    ultimate.ui.Slider( p, "Phong boost", "phongboost", 0, 1, 2, function( v )
+        local v1, v2 = ultimate.chamMats.vis[12], ultimate.chamMats.invis[12]
+
+        v1:SetFloat( "$phongboost", ultimate.cfg.vars["phongboost"])
+        v2:SetFloat( "$phongboost", ultimate.cfg.vars["phongboost"])
+    end )
+
+    ultimate.ui.Label( p, "Phong tint", function( p ) ultimate.ui.ColorPicker( "phongtint", p ) 
+        local v1, v2 = ultimate.chamMats.vis[12], ultimate.chamMats.invis[12]
+        local col = string_ToColor(ultimate.cfg.colors["phongtint"])
+        v1:SetVector( "$phongtint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
+        v2:SetVector( "$phongtint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
+    end)
+
+
+    ultimate.ui.Slider( p, "Cloak factor", "cloakfactor", 0, 1, 2, function( v )
+        local v1, v2 = ultimate.chamMats.vis[11], ultimate.chamMats.invis[11]
+
+        v1:SetFloat( "$cloakfactor", ultimate.cfg.vars["cloakfactor"])
+        v2:SetFloat( "$cloakfactor", ultimate.cfg.vars["cloakfactor"])
+    end )
+
+    ultimate.ui.Label( p, "Cloakcolor tint", function( p ) ultimate.ui.ColorPicker( "cloakcolortint", p ) 
+        local v1, v2 = ultimate.chamMats.vis[11], ultimate.chamMats.invis[11]
+        local col = string_ToColor(ultimate.cfg.colors["cloakcolortint"])
+        v1:SetVector( "$cloakcolortint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
+        v2:SetVector( "$cloakcolortint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
+    end)
+
 
     local p = ultimate.itemPanel("View",2,280):GetItemPanel()
 
@@ -4240,7 +4308,7 @@ function ultimate.tabs.Render()
     local p = ultimate.itemPanel("Tracers",3,170):GetItemPanel()
     ultimate.ui.CheckBox( p, "Bullet tracers", "Bullet tracers", false, false, true, ultimate.spfuncs[44] )
     ultimate.ui.ComboBox( p, "Type", "Bullet tracers type", { "Beam", "Line" } )
-    ultimate.ui.CheckBox( p, "Bullet Impacts", "Bullet Impacts",false,false,true )
+    ultimate.ui.CheckBox( p, "Bullet Impacts", "Bullet Impacts",false,false,true,ultimate.spfuncs[53] )
     ultimate.ui.CheckBox( p, "Bolt Tracers", "Bolt Tracers", false, false, true)
     ultimate.ui.CheckBox( p, "Smg Grena", "Smg Grena", false, false, true)
 
@@ -6832,7 +6900,7 @@ do
     
             local turn_direction_modifier = flip && 1.0 || -1.0
             local viewangles = Angle(ultimate.SilentAngle.x, ultimate.SilentAngle.y, ultimate.SilentAngle.z)
-    
+            
             if (forwardmove || sidemove) then
                 cmd:SetForwardMove(0)
                 cmd:SetSideMove(0)
@@ -7375,10 +7443,12 @@ do
         if ultimate.cfg.vars["Fakelag comp"] == 1 and ded.GetCurrentCharge() > 0 then return false end
         if ultimate.cfg.vars["Fake lag options-Disable on ladder"] and ultimate.moveType == MOVETYPE_LADDER then return false end
         if ultimate.cfg.vars["Fake lag options-Disable in attack"] and cmd:KeyDown(IN_ATTACK) then return false end
-
-        if ultimate.cfg.vars["Fake lag options-In Air"] and not me:IsFlagSet( FL_ONGROUND ) then
+        if ultimate.cfg.binds["FL on key"] != 0 and not ultimate.IsKeyDown( ultimate.cfg.binds["FL on key"] ) then
+            --ultimate.IsKeyDown( ultimate.cfg.binds["MenuKey"] )
             return false
         end
+        if  ultimate.cfg.vars["Fake lag options-In Ground"] and not me:IsFlagSet( FL_ONGROUND ) then return false end
+        if ultimate.cfg.vars["Fake lag options-In Air"] and me:IsFlagSet( FL_ONGROUND ) then return false end
 
         return true
     end
@@ -7395,13 +7465,9 @@ do
         local adaptive_factor = math_Clamp(math_ceil(64 / pertick),1,factor)
 
         /*
-
         Adaptive 2 [NOXIS]
-
-        local f = math_Clamp(math_ceil((1 / pertick / 0.015) / me:GetVelocity():Length()),1,factor)
-
         int f = (int)(ceilf(((1 / g_pGlobals->interval_per_tick) / 0.015f) / vel.Length()));
-
+        local f = math_Clamp(math_ceil((1 / pertick / 0.015) / me:GetVelocity():Length()),1,factor)
         */
 
 
@@ -7428,7 +7494,6 @@ do
             else
                 ultimate.fakeLagTicks = ultimate.fakeLagTicks - 1
             end
-
         else
             if ultimate.fakeLagfactor > 0 then ultimate.fakeLagfactor = 0 end
             ultimate.SendPacket = true
@@ -9784,10 +9849,11 @@ do
     local charge = 0
     local nevermiss,nevermiss2 = Color(15,48, 195),Color(165,18, 95)
     local csgowhite,csgored = Color(255,255,255),Color(255,25,5)
+    local gradcolor, chargedcolor, unchargedcolor
     local chargestate, ccharge, chargecolor = "NOT CHARGED", 0, chargedcolor
 
     function ultimate.DrawSomeShit()
-        local gradcolor, chargedcolor, unchargedcolor = string_ToColor( ultimate.cfg.colors["Tickbase indicatorgrad"] ), string_ToColor( ultimate.cfg.colors["Tickbase indicator"] ), string_ToColor( ultimate.cfg.colors["Tickbase indicatoruncharged"] )
+        
         if ultimate.cfg.vars["info"] then
 
             local Color, Color2 = string_ToColor( ultimate.cfg.colors["info"] ), string_ToColor( ultimate.cfg.colors["info2"] )
@@ -9865,6 +9931,7 @@ do
             
         end
         if ultimate.cfg.vars["Tickbase indicator"] then
+            gradcolor, chargedcolor, unchargedcolor= string_ToColor( ultimate.cfg.colors["Tickbase indicatorgrad"] ), string_ToColor( ultimate.cfg.colors["Tickbase indicator"] ), string_ToColor( ultimate.cfg.colors["Tickbase indicatoruncharged"] )
             local lc, blc = string_ToColor( ultimate.cfg.colors["Tickbase indicator"] ), string_ToColor( ultimate.cfg.colors["Tickbase indicatoruncharged"] )
             local drawsind = ultimate.cfg.vars["Tickbase naebnut"]
 
@@ -10378,8 +10445,8 @@ CreateMaterial( "Phong", "VertexLitGeneric", {
 	["$envmaptint" ] = "[ 1 1 1 ]", 
 	["$envmapconstrast" ] = 1, 
 	["$phong"] = 1, 
-	["$phongexponent"] = 3, 
-	["$phongboost"] = 4, 
+	["$phongexponent"] = 0.2, 
+	["$phongboost"] = 0.35, 
 	["$phongfresnelranges"] = "[0 0.5 1]",  
 	["$phongwarptexture"] = "vgui/hsv-bar", 
 	["$phongtint"] = "[ 1 1 1 ]" 
@@ -10392,8 +10459,8 @@ CreateMaterial( "Phong_z", "VertexLitGeneric", {
 	["$envmaptint" ] = "[ 1 1 1 ]", 
 	["$envmapconstrast" ] = 1, 
 	["$phong"] = 1, 
-	["$phongexponent"] = 3, 
-	["$phongboost"] = 4, 
+	["$phongexponent"] = 0.2, 
+	["$phongboost"] = 0.35, 
 	["$phongfresnelranges"] = "[0 0.5 1]",  
 	["$phongwarptexture"] = "vgui/hsv-bar", 
 	["$phongtint"] = "[ 1 1 1 ]" ,
@@ -10407,7 +10474,7 @@ CreateMaterial( "Cloak", "VertexLitGeneric", {
 CreateMaterial( "Cloak_z", "VertexLitGeneric", { 
     ['$cloakpassenabled'] = 1, 
     ['$cloakcolortint'] = '[0.05 0.05 0.05]', 
-    ['$cloakfactor'] = 0.28,
+    ['$cloakfactor'] = 0.3,
     ["$ignorez"] = 1
 } )
 CreateMaterial( "Scrollwireframe", "VertexLitGeneric", { 
@@ -10519,7 +10586,7 @@ do
                         render_SuppressEngineLighting( true )
                     end
                     local col = string_ToColor( ultimate.cfg.colors["Entity chams"] )
-                    ultimate.chamMats.vis[6]:SetVector( "$envmaptint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
+                    ultimate.chamMats.vis[7]:SetVector( "$envmaptint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
                     local mat = ultimate.chamMats.vis[ultimate.cfg.vars["Entity material"]] 
                     render_SetBlend(col.a/255)
                     render_SetColorModulation(col.r/255,col.g/255,col.b/255)
@@ -10538,7 +10605,7 @@ do
                 end
 
                 if ultimate.cfg.vars["inVisible chams"] then
-                    ultimate.chamMats.invis[6]:SetVector( "$envmaptint", Vector( invc.r / 255, invc.g / 255, invc.b / 255 ) )
+                    ultimate.chamMats.invis[7]:SetVector( "$envmaptint", Vector( invc.r / 255, invc.g / 255, invc.b / 255 ) )
                     render_MaterialOverride(ultimate.chamMats.invis[invm])
                     render_SetColorModulation(invc.r/255,invc.g/255,invc.b/255) 
 
@@ -10556,7 +10623,7 @@ do
                 end
 
                 if ultimate.cfg.vars["Visible chams"] then
-                    ultimate.chamMats.vis[6]:SetVector( "$envmaptint", Vector( vc.r / 255, vc.g / 255, vc.b / 255 ) )
+                    ultimate.chamMats.vis[7]:SetVector( "$envmaptint", Vector( vc.r / 255, vc.g / 255, vc.b / 255 ) )
                     render_MaterialOverride(ultimate.chamMats.vis[vm])
                     render_SetColorModulation(vc.r/255,vc.g/255,vc.b/255)
 
@@ -10584,7 +10651,7 @@ do
                     render_SuppressEngineLighting(true)
                 end
 
-                ultimate.chamMats.invis[6]:SetVector( "$envmaptint", Vector( sc.r / 255, sc.g / 255, sc.b / 255 ) )
+                ultimate.chamMats.invis[7]:SetVector( "$envmaptint", Vector( sc.r / 255, sc.g / 255, sc.b / 255 ) )
                 render_MaterialOverride(ultimate.chamMats.vis[ultimate.cfg.vars["Self mat"]])
                 render_SetColorModulation(sc.r/255,sc.g/255,sc.b/255)
 
@@ -10855,7 +10922,7 @@ function ultimate.drawCSModels_backtrack()
     end
 
     local col = string_ToColor(ultimate.cfg.colors["Backtrack chams"])
-    ultimate.chamMats.invis[6]:SetVector( "$envmaptint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
+    ultimate.chamMats.invis[7]:SetVector( "$envmaptint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
     render_MaterialOverride(ultimate.chamMats.invis[ultimate.cfg.vars["Backtrack material"]]) 
     render_SetColorModulation(col.r/255,col.g/255,col.b/255)
     m:SetRenderMode(1)
@@ -13259,7 +13326,7 @@ do
 
         if ultimate.cfg.vars["Viewmodel chams"] then
             local col = string_ToColor( ultimate.cfg.colors["Viewmodel chams"] )
-            ultimate.chamMats.vis[6]:SetVector( "$envmaptint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
+            ultimate.chamMats.vis[7]:SetVector( "$envmaptint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
             local mat = ultimate.chamMats.vis[ultimate.cfg.vars["Viewmodel chams type"]] 
 
             render_SetBlend(col.a/255)
@@ -13306,7 +13373,7 @@ do
         if ultimate.cfg.vars["Hand chams"] then
         
             local col = string_ToColor( ultimate.cfg.colors["Hand chams"] )
-            ultimate.chamMats.vis[6]:SetVector( "$envmaptint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
+            ultimate.chamMats.vis[7]:SetVector( "$envmaptint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
             local mat = ultimate.chamMats.vis[ultimate.cfg.vars["Hand chams type"]] 
 
             render_SetBlend(col.a/255)
@@ -13590,16 +13657,13 @@ do
                     elseif knifemode == 3 then
                         radius = math_sqrt(tbl.rightdist)
                     end
-            
-                    local pos = me:GetShootPos() - Vector(0,0,15)
-                    local Spos = me:GetShootPos()
-                    local color = string_ToColor(ultimate.cfg.colors["Knifebot fov"])
-            
+
                     if ultimate.cfg.vars["Figureknifebot"] == 1 then
-                        surface_SetDrawColor(color) 
-                        surface.DrawCircle(0, 0, radius)
+                        cam_Start3D2D(me:GetShootPos() - Vector(0,0,15), Angle(0, 0, 0), 1)       
+                            surface.DrawCircle(0, 0, radius,string_ToColor(ultimate.cfg.colors["Knifebot fov"]))
+                        cam_End3D2D()
                     elseif ultimate.cfg.vars["Figureknifebot"] == 2 then
-                        render_DrawWireframeBox( Spos, radius, 12, 12, color, false)
+                        render.DrawWireframeSphere( me:GetShootPos(), radius, 12, 12, color, false)
                     end
                 end
             end
@@ -13607,13 +13671,12 @@ do
 
         if ultimate.cfg.vars["Bolt Tracers"] then
             local bolts = {}
-            local Cbolts = string_ToColor( ultimate.cfg.colors["Bolt Tracers"] )
             for k, v in pairs(ents.GetAll()) do
                 if v:GetClass() != "crossbow_bolt" then continue end
                 bolts = v
                 local mins, maxs = bolts:GetRenderBounds()
                 local mod = Vector(8, 0, 0)
-                render_DrawWireframeBox( bolts:GetPos(), bolts:GetAngles(), mins - mod, maxs, Cbolts, true )
+                render_DrawWireframeBox( bolts:GetPos(), bolts:GetAngles(), mins - mod, maxs,string_ToColor( ultimate.cfg.colors["Bolt Tracers"] ), true )
             end
         end
 
@@ -13705,9 +13768,11 @@ do
                 end
 
 
-                render_DrawWireframeBox( impact.endPos, nullangle, ImpactMins, ImpactMaxs, tracercolors, true )   
-                render.SetMaterial( Material("sprites/light_ignorez") )
-                render.DrawSprite( impact.endPos, 25, 25, tracercolors)
+                render_DrawWireframeBox( impact.endPos, nullangle, ImpactMins, ImpactMaxs, tracercolors, true )  
+                if ultimate.cfg.vars["Bullet impact sprite"] then
+                    render.SetMaterial( Material("sprites/light_ignorez") )
+                    render.DrawSprite( impact.endPos, 25, 25, tracercolors)
+                end
             end
         end
 
@@ -14362,7 +14427,7 @@ function ultimate.drawCSModels_real()
     end
 
     local col = string_ToColor(ultimate.cfg.colors["Real chams"])
-    ultimate.chamMats.invis[6]:SetVector( "$envmaptint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
+    ultimate.chamMats.invis[7]:SetVector( "$envmaptint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
     render_MaterialOverride(ultimate.chamMats.invis[ultimate.cfg.vars["Antiaim material"]]) 
     render_SetColorModulation(col.r/255,col.g/255,col.b/255)
     render_SetBlend(col.a/255) 
