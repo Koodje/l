@@ -1502,6 +1502,24 @@ function ultimate.LoadConfig()
     ded.SetMaxShift(ultimate.cfg.vars["Charge ticks"])
     ded.EnableTickbaseShifting(ultimate.cfg.vars["Tickbase shift"])
 
+    local v1, v2, v3, v4 = ultimate.chamMats.vis[3], ultimate.chamMats.vis[4], ultimate.chamMats.invis[3], ultimate.chamMats.invis[3]
+    local v11, v21 = ultimate.chamMats.vis[12], ultimate.chamMats.invis[12]
+    local v12, v22 = ultimate.chamMats.vis[11], ultimate.chamMats.invis[11]
+
+    local col = string_ToColor(ultimate.cfg.colors["selfillumtint"])
+    local col2 = string_ToColor(ultimate.cfg.colors["phongtint"])
+    local col3 = string_ToColor(ultimate.cfg.colors["cloakcolortint"])
+
+
+    v1:SetVector( "$selfillumtint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
+    v2:SetVector( "$selfillumtint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
+    v3:SetVector( "$selfillumtint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
+    v4:SetVector( "$selfillumtint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
+    v11:SetVector( "$phongtint", Vector( col2.r / 255, col2.g / 255, col2.b / 255 ) )
+    v21:SetVector( "$phongtint", Vector( col2.r / 255, col2.g / 255, col2.b / 255 ) )
+    v12:SetVector( "$cloakcolortint", Vector( col3.r / 255, col3.g / 255, col3.b / 255 ) )
+    v22:SetVector( "$cloakcolortint", Vector( col3.r / 255, col3.g / 255, col3.b / 255 ) )
+
 end
 
 function ultimate.DeleteConfig()
