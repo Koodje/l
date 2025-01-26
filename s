@@ -705,13 +705,13 @@ ultimate.cfg.vars["Taunt resolver"] = false
 // Fake lag
 
 ultimate.cfg.vars["Fake lag"] = false
+ultimate.cfg.binds["Fake lag"] = 0
 ultimate.cfg.vars["Fake lag options-Disable on ladder"] = false
 ultimate.cfg.vars["Fake lag options-Disable in attack"] = false
 ultimate.cfg.vars["Fake lag options-Randomise"] = false
 ultimate.cfg.vars["Fake lag options-In Air"] = false
 ultimate.cfg.vars["Fake lag options-In Ground"] = false
 
-ultimate.cfg.binds["FL on key"] = 0
 ultimate.cfg.vars["Lag mode"] = 1
 ultimate.cfg.vars["Lag limit"] = 1
 ultimate.cfg.vars["Lag randomisation"] = 1
@@ -3827,10 +3827,9 @@ function ultimate.tabs.Rage()
 
     ultimate.itemPanelB( "",1,345, funcresolver )
 
-    local p = ultimate.itemPanel( "Fake lag",2,100):GetItemPanel()
+    local p = ultimate.itemPanel( "Fake lag",2,80):GetItemPanel()
 
-    ultimate.ui.CheckBox( p, "Fake lag", "Fake lag", false, false, false, ultimate.spfuncs[9] )
-    ultimate.ui.Label( p, "Fake lag on key", function( p ) ultimate.ui.Binder( "FL on key", p) end )
+    ultimate.ui.CheckBox( p, "Fake lag", "Fake lag", false, true, false, ultimate.spfuncs[9] )
     ultimate.ui.CheckBox( p, "Fake duck", "Fake duck", false, true )
 
     local p = ultimate.itemPanel( "Visualisation", 2,120 ):GetItemPanel()
@@ -7443,8 +7442,7 @@ do
         if ultimate.cfg.vars["Fakelag comp"] == 1 and ded.GetCurrentCharge() > 0 then return false end
         if ultimate.cfg.vars["Fake lag options-Disable on ladder"] and ultimate.moveType == MOVETYPE_LADDER then return false end
         if ultimate.cfg.vars["Fake lag options-Disable in attack"] and cmd:KeyDown(IN_ATTACK) then return false end
-        if ultimate.cfg.binds["FL on key"] != 0 and not ultimate.IsKeyDown( ultimate.cfg.binds["FL on key"] ) then
-            --ultimate.IsKeyDown( ultimate.cfg.binds["MenuKey"] )
+        if ultimate.cfg.binds["Fake lag"] != 0 and not ultimate.IsKeyDown( ultimate.cfg.binds["Fake lag"] ) then
             return false
         end
         if  ultimate.cfg.vars["Fake lag options-In Ground"] and not me:IsFlagSet( FL_ONGROUND ) then return false end
