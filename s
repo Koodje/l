@@ -334,7 +334,7 @@ end
 local function SmoothMaterial(path)
     return Material( path, "noclamp smooth" )
 end
-local function HSVToRGB(h, s, v)
+function HSVToRGB(h, s, v)
     local r, g, b
     local i = math.floor(h * 6)
     local f = h * 6 - i
@@ -355,8 +355,8 @@ local function HSVToRGB(h, s, v)
     return r * 255, g * 255, b * 255
 end
 
-local function DrawGradientCircle(x, y, radius, seg)
-    local cir = {}
+function DrawGradientCircle(x, y, radius, seg)
+    ultimate.cir = {}
     for i = 0, seg do
         local a = math.rad((i / seg) * 360)
         local r = math.sin(a + CurTime()) * 127 + 128
@@ -364,9 +364,9 @@ local function DrawGradientCircle(x, y, radius, seg)
         local b = math.sin(a + CurTime() + 4) * 127 + 128
         surface_SetDrawColor(r, g, b, 255)
         
-        table.insert(cir, {x = x + math.sin(a) * radius, y = y + math.cos(a) * radius})
+        table.insert(ultimate.cir, {x = x + math.sin(a) * radius, y = y + math.cos(a) * radius})
         if i > 0 then
-            surface_DrawLine(cir[i].x, cir[i].y, cir[i + 1].x, cir[i + 1].y)
+            surface_DrawLine(ultimate.cir[i].x, ultimate.cir[i].y, ultimate.cir[i + 1].x, ultimate.cir[i + 1].y)
         end
     end
 end
@@ -1432,11 +1432,11 @@ end
 
 
 function ultimate.CustomMaterial()
-    local URL = ultimate.cfg.vars["URLMaterial"] 
-    local Name = ultimate.cfg.vars["NameMaterial"]
+    ultimate.URL = ultimate.cfg.vars["URLMaterial"] 
+    ultimate.Name = ultimate.cfg.vars["NameMaterial"]
 
-    http.Fetch(URL, function(body)
-        file_Write(Name .. ".png", body)
+    http.Fetch(ultimate.URL, function(body)
+        file_Write(ultimate.Name .. ".png", body)
     end)
 end
 
@@ -1631,7 +1631,7 @@ sound.PlayURL ( "https://storage6.lightaudio.ru/dm/39923aba/2b940348/Denzel%20Cu
     --ultimate.validsnd:EnableLooping( true )
 end )
 
-local DFT, FFT = {}, 300
+ultimate.DFT, ultimate.FFT = {}, 300
 do
     local PANEL = {}
 
@@ -1708,10 +1708,7 @@ do
     
     function PANEL:Paint(w, h)
 
-        local menu = string_ToColor( ultimate.cfg.colors["Menu"] )
-        local outline = string_ToColor(ultimate.cfg.colors["OutlineMenu"])
-        local fft = string_ToColor(ultimate.cfg.colors["FFT"] )
-        surface_SimpleRect(0, 0, w, h, menu)
+        surface_SimpleRect(0, 0, w, h, string_ToColor( ultimate.cfg.colors["Menu"] ))
         
         
         if ultimate.cfg.vars["MaterialMenu"] then
@@ -1726,17 +1723,17 @@ do
         end
 
 
-        surface_SetDrawColor(outline)
+        surface_SetDrawColor(string_ToColor(ultimate.cfg.colors["OutlineMenu"]))
         surface_DrawOutlinedRect(0,0,w,h)
 
         
         if IsValid( ultimate.validsnd ) then 
-            ultimate.validsnd:FFT( DFT, FFT )
+            ultimate.validsnd:FFT( ultimate.DFT, ultimate.FFT )
             for i = 1, 220 do 
-                local rDFT = DFT[ i ]
+                local rDFT = ultimate.DFT[ i ]
                 if rDFT then
                     local hfft =  math.ceil( rDFT * 300 ) 
-                    surface_SetDrawColor( fft )
+                    surface_SetDrawColor( string_ToColor(ultimate.cfg.colors["FFT"] ) )
                     surface_DrawRect( (w / 2) - i * 2  + 10, (h - 2) - hfft / 2, 5, hfft + 3) 
                     surface_DrawRect( (w / 2) + i * 2  - 10, (h - 2) - hfft / 2, 5, hfft + 3 ) 
                 end
@@ -4587,6 +4584,7 @@ function ultimate.tabs.Players()
         surface_DrawOutlinedRect(0,0,w,h)
     end
 
+    -- Peredelat kogda to !&!& 
     local avatar = vgui.Create("AvatarImage", infodpanel)
     avatar:SetPos(5, 14) 
     avatar:SetSize(100, 100)
@@ -6660,7 +6658,8 @@ function ultimate.PredictVelocity( velocity, viewangles, dir, maxspeed, accel )
 end
 
 
-    
+ultimate.predictedPos = {}
+
 function ultimate.PredictMovement( viewangles, dir, angle )
 
 	local pm
@@ -6679,7 +6678,8 @@ function ultimate.PredictMovement( viewangles, dir, angle )
     local pticks = math_Round(ultimate.cfg.vars["CStrafe ticks"])
 	
 	local on_ground = me:IsFlagSet( FL_ONGROUND )
-	
+    ultimate.predictedPos = {}
+
 	for i = 1, pticks do
 
 		viewangles.y = math_NormalizeAngle( math_deg( math_atan2( velocity.y, velocity.x ) ) + angle )
@@ -6696,7 +6696,7 @@ function ultimate.PredictMovement( viewangles, dir, angle )
 		velocity = ultimate.PredictVelocity( velocity, viewangles, dir, maxspeed, sv_airaccelerate )
 		
 		local endpos = origin + ( velocity * TickInterval )
-
+        table.insert(ultimate.predictedPos, {start = origin, endpos = endpos})
         local filterTable = {me}  
 
         if ultimate.cfg.vars["CStrafeIgnorePeople"] then
@@ -6713,10 +6713,7 @@ function ultimate.PredictMovement( viewangles, dir, angle )
             mins = mins,
             mask = MASK_PLAYERSOLID
         })
-        if ultimate.cfg.vars["CStrafeVisual"] then
-            debugoverlay.Line( pm.StartPos,  pm.HitPos, 3, color_white, true)
-            --render.DrawLine(pm.StartPos,  pm.HitPos, color_white)
-        end
+
 		if ( ( pm.Fraction != 1 && pm.HitNormal.z <= 0.9 ) || pm.AllSolid || pm.StartSolid ) then
 			return false
 		end
@@ -7823,12 +7820,13 @@ function ultimate.OnEntityCreated(ent)
 end
 
 
-local altrapidfire = false
-local autoheal = false
+ultimate.altrapidfire = false
+ultimate.autoheal = false
 
 
 ultimate.stopspinangle = false
 ultimate.stopspinangleS = false
+
 function ultimate.CreateMove(cmd)
     ultimate.SilentAngles(cmd)
 
@@ -7931,12 +7929,12 @@ function ultimate.CreateMove(cmd)
     if ultimate.cfg.vars["autoheal"] then
         local wep = me:GetActiveWeapon()
         if IsValid(me) and me:Alive() and IsValid(wep) and  (wep:GetClass() == "weapon_medkit" or wep:GetClass() == "med_kit") then  
-            if me:Health() < 100 and not autoheal then
+            if me:Health() < 100 and not ultimate.autoheal then
                 cmd:AddKey(IN_ATTACK2)     
-                autoheal = true
-            elseif autoheal then
+                ultimate.autoheal = true
+            elseif ultimate.autoheal then
                 cmd:RemoveKey(IN_ATTACK2)  
-                autoheal = false
+                ultimate.autoheal = false
             end
         end
     end
@@ -8111,13 +8109,13 @@ function ultimate.CreateMove(cmd)
         local w = me:GetActiveWeapon()
         if IsValid(me) and IsValid(w) and (w:GetClass() == "weapon_medkit" or w:GetClass() == "med_kit") then return end
         if IsValid(w) and bit.band(cmd:GetButtons(), IN_ATTACK2) != 0 then
-            if altrapidfire then               
+            if ultimate.altrapidfire then               
                 cmd:RemoveKey(IN_ATTACK2)           
             else             
                 cmd:SetButtons(bor(cmd:GetButtons(), IN_ATTACK2))
             end
         end
-        altrapidfire = !altrapidfire
+        ultimate.altrapidfire = !ultimate.altrapidfire
     end
 
 
@@ -13681,6 +13679,12 @@ do
             end
         end
 
+  
+        if ultimate.cfg.vars["CStrafeVisual"] then
+            for _, pos in ipairs(ultimate.predictedPositions) do
+                render.DrawLine(pos.start, pos.endpos, Color(255, 255, 255))
+            end
+        end
         if ultimate.cfg.vars["Smg Grena"] then
             local grenka = string_ToColor( ultimate.cfg.colors["Smg Grena"] )
             for i, grenade in ipairs(ultimate.grenades) do
