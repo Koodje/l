@@ -4335,7 +4335,7 @@ ultimate.spfuncs[43] = function()
     ultimate.ui.Slider( ultimate.ui.SettingsPan, "Angle max step", "CStrafe angle max step", 5, 50, 0 )
     ultimate.ui.Slider( ultimate.ui.SettingsPan, "Ground diff", "CStrafe ground diff", 1, 65, 0 )
     ultimate.ui.CheckBox( ultimate.ui.SettingsPan, "Ignore people", "CStrafeIgnorePeople")
-    ultimate.ui.CheckBox( ultimate.ui.SettingsPan, "Debug line", "CStrafeVisual")
+    ultimate.ui.CheckBox( ultimate.ui.SettingsPan, "Visualation", "CStrafeVisual")
    
     
 end
@@ -13681,7 +13681,7 @@ do
 
   
         if ultimate.cfg.vars["CStrafeVisual"] then
-            for _, pos in ipairs(ultimate.predictedPositions) do
+            for _, pos in ipairs(ultimate.predictedPos) do
                 render.DrawLine(pos.start, pos.endpos, Color(255, 255, 255))
             end
         end
