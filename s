@@ -1501,6 +1501,7 @@ function ultimate.LoadConfig()
     ded.SetMinShift(ultimate.cfg.vars["Shift ticks"])
     ded.SetMaxShift(ultimate.cfg.vars["Charge ticks"])
     ded.EnableTickbaseShifting(ultimate.cfg.vars["Tickbase shift"])
+
 end
 
 function ultimate.DeleteConfig()
@@ -4231,6 +4232,7 @@ function ultimate.tabs.Render()
 
     ultimate.ui.Label( p, "Selfillum tint", function( p ) ultimate.ui.ColorPicker( "selfillumtint", p ) 
         local v1, v2, v3, v4 = ultimate.chamMats.vis[3], ultimate.chamMats.vis[4], ultimate.chamMats.invis[3], ultimate.chamMats.invis[3]
+        
         local col = string_ToColor(ultimate.cfg.colors["selfillumtint"])
         v1:SetVector( "$selfillumtint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
         v2:SetVector( "$selfillumtint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
@@ -4258,6 +4260,7 @@ function ultimate.tabs.Render()
         local col = string_ToColor(ultimate.cfg.colors["phongtint"])
         v1:SetVector( "$phongtint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
         v2:SetVector( "$phongtint", Vector( col.r / 255, col.g / 255, col.b / 255 ) )
+        
     end)
 
 
