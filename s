@@ -5336,10 +5336,10 @@ function ultimate.MultipointGroupCheck( group )
     if group == 1 and not ultimate.cfg.vars["Multipoint groups-Head"] then return false end
     if group == 2 and not ultimate.cfg.vars["Multipoint groups-Chest"] then return false end
     if group == 3 and not ultimate.cfg.vars["Multipoint groups-Stomach"] then return false end
-    if group == 4 and not ultimate.cfg.vars["Multipoint groups-Right Arms"] then false end
-    if group == 5 and not ultimate.cfg.vars["Multipoint groups-Left Arms"] then false end
-    if group == 6 and not ultimate.cfg.vars["Multipoint groups-Right Legs"] then false end
-    if group == 7 and not ultimate.cfg.vars["Multipoint groups-Left Legs"] then false end
+    if group == 4 and not ultimate.cfg.vars["Multipoint groups-Right Arms"] then return false end
+    if group == 5 and not ultimate.cfg.vars["Multipoint groups-Left Arms"] then return false end
+    if group == 6 and not ultimate.cfg.vars["Multipoint groups-Right Legs"] then return false end
+    if group == 7 and not ultimate.cfg.vars["Multipoint groups-Left Legs"] then return false end
     if group == 0 and not ultimate.cfg.vars["Multipoint groups-Generic"] then return false end
 
 
