@@ -571,8 +571,12 @@ ultimate.cfg.vars["Hitscan"]                    = false
 ultimate.cfg.vars["Hitscan groups-Head"]        = false
 ultimate.cfg.vars["Hitscan groups-Chest"]       = false
 ultimate.cfg.vars["Hitscan groups-Stomach"]     = false
-ultimate.cfg.vars["Hitscan groups-Arms"]        = false
-ultimate.cfg.vars["Hitscan groups-Legs"]        = false
+
+ultimate.cfg.vars["Hitscan groups-Left Arms"]        = false
+ultimate.cfg.vars["Hitscan groups-Right Arms"]   = false
+ultimate.cfg.vars["Hitscan groups-Left Legs"]        = false
+ultimate.cfg.vars["Hitscan groups-Right Legs"]        = false
+
 ultimate.cfg.vars["Hitscan groups-Generic"]     = false
 ultimate.cfg.vars["Hitscan mode"]               = 1
 ultimate.cfg.vars["Multipoint"]                 = false
@@ -581,8 +585,10 @@ ultimate.cfg.vars["Multipoint scale max"]       = 0.8
 ultimate.cfg.vars["Multipoint groups-Head"]     = false
 ultimate.cfg.vars["Multipoint groups-Chest"]    = false
 ultimate.cfg.vars["Multipoint groups-Stomach"]  = false
-ultimate.cfg.vars["Multipoint groups-Arms"]     = false
-ultimate.cfg.vars["Multipoint groups-Legs"]     = false
+ultimate.cfg.vars["Multipoint groups-Left Arms"]        = false
+ultimate.cfg.vars["Multipoint groups-Right Arms"]   = false
+ultimate.cfg.vars["Multipoint groups-Left Legs"]        = false
+ultimate.cfg.vars["Multipoint groups-Right Legs"]        = false
 ultimate.cfg.vars["Multipoint groups-Generic"]  = false
 
 
@@ -3694,9 +3700,11 @@ function ultimate.tabs.Aimbot()
     ultimate.ui.ComboBox( p, "Hitbox selection", "Hitbox selection", { "Head", "Chest", "Penis" } )
     ultimate.ui.CheckBox( p, "Hitscan", "Hitscan" ) 
     //ultimate.ui.ComboBox( p, "Hitscan mode", { "Damage", "Safety", "Scale" }, "Hitscan mode" )
-    ultimate.ui.MultiCombo( p, "Hitscan groups", { "Head", "Chest", "Stomach", "Arms", "Legs", "Generic" } )
+    ultimate.ui.MultiCombo( p, "Hitscan groups", { "Head", "Chest", "Stomach", "Left Arms", "Right Arms", "Left Legs", "Right Legs", "Generic" } )
+
     ultimate.ui.CheckBox( p, "Multipoint", "Multipoint" ) 
-    ultimate.ui.MultiCombo( p, "Multipoint groups", { "Head", "Chest", "Stomach", "Arms", "Legs", "Generic" } )
+    ultimate.ui.MultiCombo( p, "Multipoint groups", { "Head", "Chest", "Stomach", "Left Arms", "Right Arms", "Left Legs", "Right Legs", "Generic" } )
+
     ultimate.ui.Slider( p, "Multipoint scale min", "Multipoint scale min", 0.5, 1, 1 )
     ultimate.ui.Slider( p, "Multipoint scale max", "Multipoint scale max", 0.5, 1, 1 )
 
@@ -5322,13 +5330,18 @@ function ultimate.ParseBones( ply, bone )
     return 0
 end
 
+
+
 function ultimate.MultipointGroupCheck( group )
     if group == 1 and not ultimate.cfg.vars["Multipoint groups-Head"] then return false end
     if group == 2 and not ultimate.cfg.vars["Multipoint groups-Chest"] then return false end
     if group == 3 and not ultimate.cfg.vars["Multipoint groups-Stomach"] then return false end
-    if group == 4 or group == 5 and not ultimate.cfg.vars["Multipoint groups-Arms"] then return false end
-    if group == 6 or group == 7 and not ultimate.cfg.vars["Multipoint groups-Legs"] then return false end
+    if group == 4 and not ultimate.cfg.vars["Multipoint groups-Right Arms"] then continue end
+    if group == 5 and not ultimate.cfg.vars["Multipoint groups-Left Arms"] then continue end
+    if group == 6 and not ultimate.cfg.vars["Multipoint groups-Right Legs"] then continue end
+    if group == 7 and not ultimate.cfg.vars["Multipoint groups-Left Legs"] then continue end
     if group == 0 and not ultimate.cfg.vars["Multipoint groups-Generic"] then return false end
+
 
     return true 
 end
@@ -5352,8 +5365,10 @@ function ultimate.GetBones( ply )
             if group == 1 and not ultimate.cfg.vars["Hitscan groups-Head"] then continue end
             if group == 2 and not ultimate.cfg.vars["Hitscan groups-Chest"] then continue end
             if group == 3 and not ultimate.cfg.vars["Hitscan groups-Stomach"] then continue end
-            if group == 4 and group == 5 and not ultimate.cfg.vars["Hitscan groups-Arms"] then continue end
-            if group == 6 and group == 7 and not ultimate.cfg.vars["Hitscan groups-Legs"] then continue end
+            if group == 4 and not ultimate.cfg.vars["Hitscan groups-Right Arms"] then continue end
+            if group == 5 and not ultimate.cfg.vars["Hitscan groups-Left Arms"] then continue end
+            if group == 6 and not ultimate.cfg.vars["Hitscan groups-Right Legs"] then continue end
+            if group == 7 and not ultimate.cfg.vars["Hitscan groups-Left Legs"] then continue end
             if group == 0 and not ultimate.cfg.vars["Hitscan groups-Generic"] then continue end
 
             pos[ #pos + 1 ] = { bone = i, hitgroup = group }
@@ -5460,7 +5475,6 @@ function ultimate.GetBones( ply )
 
     return { pos }
 end
-
 function ultimate.GetSortedPlayers( mode, selfpred, plypred, vischeck )
     local players   = player_GetAll()   
     local eyepos    = me:EyePos()       
