@@ -561,6 +561,7 @@ ultimate.cfg.vars["Ignores-Head unhitable"]     = false
 ultimate.cfg.vars["Ignores-Driver"]             = false
 ultimate.cfg.vars["Ignores-Legits"]            = false
 ultimate.cfg.vars["Ignores-RuseliteOptimization"]            = false
+ultimate.cfg.vars["Ignores-Spectator"]            = false
 ultimate.cfg.vars["Wallz"]                      = false
 ultimate.cfg.vars["Max targets"]                = 10
 
@@ -3691,7 +3692,7 @@ function ultimate.tabs.Aimbot()
     local p = ultimate.itemPanel( "Target selection", 3, 175 ):GetItemPanel()
 
     ultimate.ui.ComboBox( p, "Target selection", "Target selection", { "Distance", "FOV","Prediction Distance", "Prediction FOV","Rage players" } )
-    ultimate.ui.MultiCombo( p, "Ignores", { "Friends", "Steam friends", "Teammates", "Driver", "Head unhitable", "God time", "Nocliping", "Nodraw", "Frozen", "Bots", "Admins","Legits","RuseliteOptimization" } )
+    ultimate.ui.MultiCombo( p, "Ignores", { "Friends", "Steam friends", "Teammates", "Driver", "Head unhitable", "God time", "Nocliping", "Nodraw", "Frozen", "Bots", "Admins","Legits","RuseliteOptimization","Spectator" } )
     ultimate.ui.CheckBox( p, "Wallz", "Wallz" ) 
     ultimate.ui.Slider( p, "Max targets", "Max targets", 0, 10, 0 )
 
@@ -5503,6 +5504,7 @@ function ultimate.GetSortedPlayers( mode, selfpred, plypred, vischeck )
 
         local iTeamEnemy = ultimate.GetTeam( v )
         if st == TEAM_SPECTATOR or ultimate.cfg.vars["Ignores-Teammates"] and iTeamLocal == iTeamEnemy then continue end 
+        if iTeamEnemy == "Spectator" and ultimate.cfg.vars["Ignores-Spectator"] then continue end
         if ultimate.cfg.vars["Ignores-Nocliping"] and v:GetMoveType() == MOVETYPE_NOCLIP then continue end 
 		if ultimate.cfg.vars["Ignores-Legits"] then local pitch = v:EyeAngles().p if pitch > -88 and pitch < 88 then continue end end
         if ultimate.cfg.vars["Ignores-RuseliteOptimization"] and IsValid(me) and (me:GetPos() - v:GetPos()):Length() > 3499 then continue end
@@ -9117,6 +9119,23 @@ end
                     render_DrawWireframeBox(v:GetPos(), v:GetAngles(), v:OBBMins(), v:OBBMaxs(), ultimate.colorsboxen, true)
                 cam_End3D()
             elseif ultimate.cfg.vars["Box style"] == 7 then
+                if not ultimate.cfg.vars["Prioritets color"] then
+                    surface_SetDrawColor(1,1,1,255)
+                    surface_DrawOutlinedRect(MinX-1,MinY-1,XLen+2,YLen+2,3)
+            
+                    surface_SetDrawColor( Color(255,255,255))
+                    surface_DrawOutlinedRect(MinX,MinY,XLen,YLen,1)
+
+                    surface_SetDrawColor(Color(0,0,255))
+                    surface_DrawTexturedRect( MinX , MaxY - 1, 1, -YLen / 1.5)
+                    surface_DrawTexturedRect(MinX + XLen - 1, MaxY - 1, 1, -YLen / 1.5 )
+
+                    surface_SetDrawColor(Color(255,0,0))
+
+                    surface_DrawTexturedRect( MinX , MaxY-1, 1, -YLen / 3)
+                    surface_DrawTexturedRect(MinX + XLen - 1, MaxY-1, 1, -YLen / 3)
+                    surface_DrawOutlinedRect(MinX, MinY + YLen - 1, XLen, 1) 
+                end
                 if ultimate.cfg.vars["Prioritets color"] then
                     
                     if ultimate.cfg.vars["Prioritets"] then
@@ -9175,22 +9194,6 @@ end
                             surface_DrawTexturedRect(MinX + XLen - 1, MaxY-1, 1, -YLen / 2)
                             surface_DrawOutlinedRect(MinX, MinY + YLen - 1, XLen, 1)
                         end
-                    else
-                        surface_SetDrawColor(1,1,1,255)
-                        surface_DrawOutlinedRect(MinX-1,MinY-1,XLen+2,YLen+2,3)
-                
-                        surface_SetDrawColor( Color(255,255,255))
-                        surface_DrawOutlinedRect(MinX,MinY,XLen,YLen,1)
-        
-                        surface_SetDrawColor(Color(0,0,255))
-                        surface_DrawTexturedRect( MinX , MaxY - 1, 1, -YLen / 1.5)
-                        surface_DrawTexturedRect(MinX + XLen - 1, MaxY - 1, 1, -YLen / 1.5 )
-        
-                        surface_SetDrawColor(Color(255,0,0))
-        
-                        surface_DrawTexturedRect( MinX , MaxY-1, 1, -YLen / 3)
-                        surface_DrawTexturedRect(MinX + XLen - 1, MaxY-1, 1, -YLen / 3)
-                        surface_DrawOutlinedRect(MinX, MinY + YLen - 1, XLen, 1) 
                     end
                 end
 
@@ -11088,6 +11091,7 @@ function ultimate.player_hurt(data)
         if ultimate.cfg.vars["StandartResolver"] then 
             if ultimate.cfg.vars["Standartrememberangle"] then
                 ultimate.stopspinangleS = true
+                ultimate.shotik = 0
             else
                 hurted.aimshots = (hurted.aimshots or 0) - ultimate.cfg.vars["Standartdelayangle"]
             end
@@ -11096,6 +11100,7 @@ function ultimate.player_hurt(data)
         if ultimate.cfg.vars["LBYResolver"] then 
             if ultimate.cfg.vars["LBYrememberangle"] then
                 ultimate.stopspinangle = true
+                ultimate.shotiks = 0
             else
                 hurted.aimshots = (hurted.aimshots or 0) - ultimate.cfg.vars["LBYdelayangle"]
             end
