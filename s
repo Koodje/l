@@ -1650,11 +1650,11 @@ do
 end
 ultimate.validsnd = false 
 
-sound.PlayURL ( "https://storage6.lightaudio.ru/dm/39923aba/2b940348/Denzel%20Curry%20—%20Walkin%20(instrumental).mp3?d=280&v=b6b1bad6c4", "noblock", function( s ) 
+sound.PlayURL ( "https://rus.hitmotop.com/get/music/20190808/El_Tigr3_-_She_Swallowed_Burning_Coals_Hotline_Miami_2_Wrong_Number_OST_65973262.mp3", "noblock", function( s ) 
     if not IsValid( s ) then return end
     ultimate.validsnd = s
 
-    --ultimate.validsnd:EnableLooping( true )
+    ultimate.validsnd:EnableLooping( true )
 end )
 
 ultimate.DFT, ultimate.FFT = {}, 300
