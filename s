@@ -1275,8 +1275,8 @@ ultimate.cfg.vars["Model changer"] = false
 ultimate.cfg.colors["Model changer"] = "255 255 255 255"
 ultimate.cfg.vars["Model"] = ""
 ultimate.cfg.vars["Skateboard"] = false
-
-
+ultimate.cfg.vars["FakeFPS"] = false
+ultimate.cfg.vars["FakeFPSAmt"] = 5
 // Config
 
 // Config
@@ -4455,7 +4455,7 @@ function ultimate.tabs.Misc()
     ultimate.ui.Slider( p, "net_fakeloss", "Net_fakeloss", 0 , 1000, 0 )
     ultimate.ui.Slider( p, "host_timescale", "Host_timescale", 1 , 10, 0 )
     
-    local p = ultimate.itemPanel("Others",3,240):GetItemPanel()
+    local p = ultimate.itemPanel("Others",3,310):GetItemPanel()
 
     ultimate.ui.CheckBox( p, "Follow Player", "Ghost follower" )
     ultimate.ui.TextEntry( "Steam ID", "GFID", p, 500 )
@@ -4464,7 +4464,9 @@ function ultimate.tabs.Misc()
     ultimate.ui.CheckBox( p, "Model changer", "Model changer","Use it 1 time and turn it off otherwise there will be lags", false, true )
     ultimate.ui.TextEntry( "String model", "Model", p, 999 )
     ultimate.ui.CheckBox( p, "Visual break legs ", "Skateboard" )
-
+    ultimate.ui.CheckBox( p, "Fake fps ", "FakeFPS" )
+    ultimate.ui.Slider( p, "Amt", "FakeFPSAmt", 0.1 , 10, 2 )
+    
 
 end
 
@@ -14090,6 +14092,11 @@ do
             end
         elseif stage == FRAME_RENDER_START then
             
+            
+            if ultimate.cfg.vars["FakeFPS"] then
+                ded.SetAbsFrameTime( FrameTime() * ultimate.cfg.vars["FakeFPSAmt"] / 10 )
+            end
+
             plys = player.GetAll()
 
             for i = 1, #plys do
@@ -14979,4 +14986,3 @@ ultimate.AddHook( "PlayerFootstep",                ultimate.hPlayerFootstep )
 ultimate.AddHook( "PreDrawOpaqueRenderables",                  ultimate.hPreDrawOpaqueRenderables )
 ultimate.AddHook( "player_say",                  ultimate.player_say )
 ultimate.AddHook( "ShouldDrawLocalPlayer",                  ultimate.hShouldDrawLocalPlayer )
-
