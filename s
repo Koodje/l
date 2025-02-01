@@ -7279,7 +7279,6 @@ ultimate.CalcYaw = {
         realka1 = ultimate.inverted and ultimate.cfg.vars["Switch real 1"] or -ultimate.cfg.vars["Switch real 1"]
         realka2 = ultimate.inverted and ultimate.cfg.vars["Switch real 2"] or -ultimate.cfg.vars["Switch real 2"]
         fake1 = ultimate.inverted and ultimate.cfg.vars["Switch fake 1"] or -ultimate.cfg.vars["Switch fake 1"]
-       fg.vars["Switch real 2"]
         fake1 = ultimate.inverted and ultimate.cfg.vars["Switch fake 1"] or -ultimate.cfg.vars["Switch fake 1"]
         fake2 = ultimate.inverted and ultimate.cfg.vars["Switch fake 2"] or -ultimate.cfg.vars["Switch fake 2"]
 
