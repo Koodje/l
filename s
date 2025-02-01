@@ -11062,16 +11062,18 @@ function ultimate.player_hurt(data)
                     local boneId = hurted:GetHitBoxBone(hitboxId, hitboxGroupId)
                     local boneMat = hurted:GetBoneMatrix(boneId)
 
-                    local bonePos = boneMat:GetTranslation()
-                    local boneAng = boneMat:GetAngles()
+                    if IsValid(boneMat) then
+                        local bonePos = boneMat:GetTranslation()
+                        local boneAng = boneMat:GetAngles()
 
-                    local mins, maxs = hurted:GetHitBoxBounds(hitboxId, hitboxGroupId)
+                        local mins, maxs = hurted:GetHitBoxBounds(hitboxId, hitboxGroupId)
 
-                    hitboxData[#hitboxData + 1] = {
-                        pos = bonePos,
-                        angles = boneAng,
-                        mins = mins, maxs = maxs
-                    }
+                        hitboxData[#hitboxData + 1] = {
+                            pos = bonePos,
+                            angles = boneAng,
+                            mins = mins, maxs = maxs
+                        }
+                    end
                 end
             end
 
