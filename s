@@ -869,6 +869,7 @@ ultimate.cfg.colors["Prioritets"] = "31 255 0 255"
 ultimate.cfg.colors["Prioritets2"] = "255 25 0 255"
 
 ultimate.cfg.vars["Sound esp"] = false 
+ultimate.cfg.colors["Sound esp"] = "255 255 255 255"
 ultimate.cfg.vars["Sound esp view"] = 1 
 
 ultimate.cfg.vars["Show records"] = false
@@ -3982,7 +3983,7 @@ ultimate.spfuncs[26] = function(p)
     ultimate.ui.CheckBox( p, "Flags", "Flags", false, false, false, false, false, function(p) local lbl, drop = ultimate.ui.ComboBox( p, "", "Flags pos", {"Up","Down","Right","Left"} ) lbl:Remove() drop:Dock(RIGHT) drop:DockMargin(0,0,0,0) end )
     ultimate.ui.CheckBox( p, "Packets ( Fake lag )", "Simtime updated", false, false, false, false, false, function(p) local lbl, drop = ultimate.ui.ComboBox( p, "", "Simtime pos", {"Up","Down","Right","Left"} ) lbl:Remove() drop:Dock(RIGHT) drop:DockMargin(0,0,0,0) end )
     ultimate.ui.CheckBox( p, "Prioritets", "Prioritets", false, false, false, false, false, function(p) local lbl, drop = ultimate.ui.ComboBox( p, "", "Prioritets pos",{"Up","Down","Right","Left"} ) lbl:Remove() drop:Dock(RIGHT) drop:DockMargin(0,0,0,0) end )
-    ultimate.ui.CheckBox( p, "Sound esp", "Sound esp",false,false,false,false,false,function(p) local lbl, drop = ultimate.ui.ComboBox( p, "", "Sound esp view", {"3D","2D"} ) lbl:Remove() drop:Dock(RIGHT) drop:DockMargin(0,0,0,0) end )  
+    ultimate.ui.CheckBox( p, "Sound esp", "Sound esp",false,false,true,false,false,function(p) local lbl, drop = ultimate.ui.ComboBox( p, "", "Sound esp view", {"3D","2D"} ) lbl:Remove() drop:Dock(RIGHT) drop:DockMargin(0,0,0,0) end )  
     ultimate.ui.CheckBox( p, "Show records", "Show records" )
     ultimate.ui.CheckBox( p, "Skeleton", "Skeleton" )
     ultimate.ui.CheckBox( p, "Avatar", "Avatarimage" )
@@ -11062,18 +11063,16 @@ function ultimate.player_hurt(data)
                     local boneId = hurted:GetHitBoxBone(hitboxId, hitboxGroupId)
                     local boneMat = hurted:GetBoneMatrix(boneId)
 
-                    if IsValid(boneMat) then
-                        local bonePos = boneMat:GetTranslation()
-                        local boneAng = boneMat:GetAngles()
+                    local bonePos = boneMat:GetTranslation()
+                    local boneAng = boneMat:GetAngles()
 
-                        local mins, maxs = hurted:GetHitBoxBounds(hitboxId, hitboxGroupId)
+                    local mins, maxs = hurted:GetHitBoxBounds(hitboxId, hitboxGroupId)
 
-                        hitboxData[#hitboxData + 1] = {
-                            pos = bonePos,
-                            angles = boneAng,
-                            mins = mins, maxs = maxs
-                        }
-                    end
+                    hitboxData[#hitboxData + 1] = {
+                        pos = bonePos,
+                        angles = boneAng,
+                        mins = mins, maxs = maxs
+                    }
                 end
             end
 
@@ -13591,7 +13590,7 @@ do
                         ultimate.radius = 5 + (ultimate.maxCircleRadius - 5) * (ultimate.elapsed / 2)
 
                         local pos = ultimate.circle.pos
-                        
+                        local col = string_ToColor( ultimate.cfg.colors["Sound esp"] )
                         if view == 1 then
 
                             cam_IgnoreZ( true )
@@ -13602,7 +13601,7 @@ do
                         elseif view == 2 then
                             cam_Start3D2D(ultimate.circle.pos, Angle(0, 0, 0), 1)
                                 cam_IgnoreZ( true )
-                                    surface.DrawCircle(0, 0, ultimate.radius, Color(255,255,255,ultimate.alphasound)) 
+                                    surface.DrawCircle(0, 0, ultimate.radius, Color(col.r,col.g,col.b,ultimate.alphasound)) 
                                 cam_IgnoreZ( false )
                             cam_End3D2D()
                         end
@@ -13610,6 +13609,7 @@ do
                 end
             end
         end
+       
 
         if ultimate.cfg.vars["Crosshair 3D"] then
 
