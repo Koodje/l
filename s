@@ -970,7 +970,6 @@ ultimate.cfg.colors["keybind txt"] = "255 255 255 255"
 // Indicators 
 
 ultimate.cfg.vars["On screen logs"] = false
-
 ultimate.cfg.colors["On screen logs"] = "69 255 69 255"
 ultimate.cfg.colors["Miss lagcomp"] = "69 69 255 255"
 ultimate.cfg.colors["Miss spread"] = "255 255 69 255"
@@ -4061,7 +4060,7 @@ function ultimate.tabs.Visuals()
     ultimate.ui.CheckBox( p, "Disable sensivity adjustment", "Disable SADJ" )
     ultimate.ui.CheckBox( p, "Screengrab image", "Screengrab image" )
 
-    local p = ultimate.itemPanel( "Indicators", 3, 210 ):GetItemPanel()
+    local p = ultimate.itemPanel( "Indicators", 3, 220 ):GetItemPanel()
 
     ultimate.ui.CheckBox( p, "On screen logs", "On screen logs", false, false, true, false, false, function(p) ultimate.ui.ColorPicker( "Miss lagcomp", p ) ultimate.ui.ColorPicker( "Miss spread", p ) ultimate.ui.ColorPicker( "Miss fail", p ) end )
     ultimate.ui.CheckBox( p, "Tickbase indicator", "Tickbase indicator",false ,false ,true ,false ,false, function(p) ultimate.ui.ColorPicker( "Tickbase indicatorgrad", p ) ultimate.ui.ColorPicker( "Tickbase indicatoruncharged", p ) end )
@@ -10192,6 +10191,7 @@ do
         if ultimate.cfg.vars[ "On screen logs" ] and table.Count( ultimate.onScreenLogs ) > 0 then
             local tick = engine.TickCount()
             local x, y = scrw / 2, scrh / 2 + 45 
+
     
             for k, v in pairs( ultimate.onScreenLogs ) do
 
@@ -10221,7 +10221,6 @@ do
     
                     x = x + tw
                 end
-    
                 x, y = scrw / 2, y + th
             end
         end
@@ -13690,15 +13689,14 @@ do
   
         if ultimate.cfg.vars["CStrafeVisual"] then
             for _, pos in ipairs(ultimate.predictedPos) do
-                render.DrawLine(pos.start, pos.endpos, Color(255, 255, 255))
+                render.DrawLine(pos.start, pos.endpos, string_ToColor( ultimate.cfg.colors["v"] ))
             end
         end
         if ultimate.cfg.vars["Smg Grena"] then
-            local grenka = string_ToColor( ultimate.cfg.colors["Smg Grena"] )
             for i, grenade in ipairs(ultimate.grenades) do
                 if IsValid(grenade) then
                     local pos = grenade:GetPos()
-                    render_DrawWireframeBox(pos, Angle(0, 0, 0), Vector(-5, -5, -5), Vector(5, 5, 5), grenka, true)
+                    render_DrawWireframeBox(pos, Angle(0, 0, 0), Vector(-5, -5, -5), Vector(5, 5, 5), string_ToColor( ultimate.cfg.colors["Smg Grena"] ), true)
                 else
                     table.remove(ultimate.grenades, i)
                 end
