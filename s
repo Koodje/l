@@ -7279,6 +7279,8 @@ ultimate.CalcYaw = {
         realka1 = ultimate.inverted and ultimate.cfg.vars["Switch real 1"] or -ultimate.cfg.vars["Switch real 1"]
         realka2 = ultimate.inverted and ultimate.cfg.vars["Switch real 2"] or -ultimate.cfg.vars["Switch real 2"]
         fake1 = ultimate.inverted and ultimate.cfg.vars["Switch fake 1"] or -ultimate.cfg.vars["Switch fake 1"]
+       fg.vars["Switch real 2"]
+        fake1 = ultimate.inverted and ultimate.cfg.vars["Switch fake 1"] or -ultimate.cfg.vars["Switch fake 1"]
         fake2 = ultimate.inverted and ultimate.cfg.vars["Switch fake 2"] or -ultimate.cfg.vars["Switch fake 2"]
 
 
@@ -10190,8 +10192,13 @@ do
 
         if ultimate.cfg.vars[ "On screen logs" ] and table.Count( ultimate.onScreenLogs ) > 0 then
             local tick = engine.TickCount()
-            local x, y = scrw / 2, scrh / 2 + 45 
-
+            local x, y
+            if ultimate.cfg.vars[ "On screen logs pos" ] == 1 then
+                x, y = scrw / 2, scrh / 2 + 45 
+            elseif ultimate.cfg.vars[ "On screen logs pos" ] == 2 then
+                x, y = 25, 25
+            elseif ultimate.cfg.vars[ "On screen logs pos" ] == 3 then
+            end
     
             for k, v in pairs( ultimate.onScreenLogs ) do
 
@@ -10221,7 +10228,14 @@ do
     
                     x = x + tw
                 end
-                x, y = scrw / 2, y + th
+    
+                if ultimate.cfg.vars[ "On screen logs pos" ] == 1 then
+                    x, y = scrw / 2, y + th
+                elseif ultimate.cfg.vars[ "On screen logs pos" ] == 2 then
+                    x, y = 25, y + th
+                elseif ultimate.cfg.vars[ "On screen logs pos" ] == 3 then
+                end
+               
             end
         end
 
@@ -13689,7 +13703,7 @@ do
   
         if ultimate.cfg.vars["CStrafeVisual"] then
             for _, pos in ipairs(ultimate.predictedPos) do
-                render.DrawLine(pos.start, pos.endpos, string_ToColor( ultimate.cfg.colors["v"] ))
+                render.DrawLine(pos.start, pos.endpos, string_ToColor( ultimate.cfg.colors["SelfLine"] ))
             end
         end
         if ultimate.cfg.vars["Smg Grena"] then
@@ -14973,14 +14987,4 @@ ultimate.AddHook( "PrePlayerDraw",                    ultimate.PrePlayerDraw )
 ultimate.AddHook( "OnEntityCreated",                  ultimate.OnEntityCreated )  
 
 ultimate.AddHook( "entity_killed",                    ultimate.entity_killed )  
-ultimate.AddHook( "player_hurt",                      ultimate.player_hurt )  
-ultimate.AddHook( "player_disconnect",                      ultimate.player_disconnect )  
-ultimate.AddHook( "SetupWorldFog",                ultimate.hSetupWorldFog ) 
-ultimate.AddHook( "SetupSkyboxFog",                ultimate.hSetupSkyboxFog ) 
-
-ultimate.AddHook( "CalcMainActivity",                ultimate.hCalcMainActivity ) 
-ultimate.AddHook( "PlayerFootstep",                ultimate.hPlayerFootstep ) 
-
-ultimate.AddHook( "PreDrawOpaqueRenderables",                  ultimate.hPreDrawOpaqueRenderables )
-ultimate.AddHook( "player_say",                  ultimate.player_say )
-ultimate.AddHook( "ShouldDrawLocalPlayer",                  ultimate.hShouldDrawLocalPlayer )
+ultimate.AddHook( "player_h
