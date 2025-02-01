@@ -14985,4 +14985,14 @@ ultimate.AddHook( "PrePlayerDraw",                    ultimate.PrePlayerDraw )
 ultimate.AddHook( "OnEntityCreated",                  ultimate.OnEntityCreated )  
 
 ultimate.AddHook( "entity_killed",                    ultimate.entity_killed )  
-ultimate.AddHook( "player_h
+ultimate.AddHook( "player_hurt",                      ultimate.player_hurt )  
+ultimate.AddHook( "player_disconnect",                      ultimate.player_disconnect )  
+ultimate.AddHook( "SetupWorldFog",                ultimate.hSetupWorldFog ) 
+ultimate.AddHook( "SetupSkyboxFog",                ultimate.hSetupSkyboxFog ) 
+
+ultimate.AddHook( "CalcMainActivity",                ultimate.hCalcMainActivity ) 
+ultimate.AddHook( "PlayerFootstep",                ultimate.hPlayerFootstep ) 
+
+ultimate.AddHook( "PreDrawOpaqueRenderables",                  ultimate.hPreDrawOpaqueRenderables )
+ultimate.AddHook( "player_say",                  ultimate.player_say )
+ultimate.AddHook( "ShouldDrawLocalPlayer",                  ultimate.hShouldDrawLocalPlayer )
