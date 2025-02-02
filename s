@@ -7944,18 +7944,18 @@ function StopRecording()
     ticks = 0
     recording = 0 
 end
-
 function StartPlay(cmd)
     if #Metaz == 0 then return end
 
     local startPos = Metaz[1].pos
     local distance = me:GetPos():Distance(startPos)
-
-    if distance > 0 then
-        ultimate.MoveTo(cmd, startPos)
-        recording = 2
-        i = 1 
+    if distance > 5 then
+        ultimate.MoveTo( cmd, startPos )
+        return
     end
+
+    recording = 2
+    i = 1 
 end
 ultimate.cfgmovement = {}
 if not file.Exists( "data/movement", "GAME" ) then 
