@@ -7945,17 +7945,17 @@ function StopRecording()
     recording = 0 
 end
 
-function StartPlay()
+function StartPlay(cmd)
     if #Metaz == 0 then return end
 
     local startPos = Metaz[1].pos
     local distance = me:GetPos():Distance(startPos)
-    if distance > 5 then
-        return
-    end
 
-    recording = 2
-    i = 1 
+    if distance > 0 then
+        ultimate.MoveTo(cmd, startPos)
+        recording = 2
+        i = 1 
+    end
 end
 ultimate.cfgmovement = {}
 if not file.Exists( "data/movement", "GAME" ) then 
@@ -8237,7 +8237,7 @@ function ultimate.CreateMove(cmd)
         if ultimate.IsKeyDown(ultimate.cfg.binds["Start Record"]) then
             StartRecording()
         elseif ultimate.IsKeyDown(ultimate.cfg.binds["Play Record"]) then
-            StartPlay()
+            StartPlay(cmd)
         elseif ultimate.IsKeyDown(ultimate.cfg.binds["Stop Record"]) then
             StopRecording()
         end
@@ -8251,6 +8251,7 @@ function ultimate.CreateMove(cmd)
                 recording = 0 
             end
         elseif recording == 2 then
+
             local meta = Metaz[i]
             if meta then
                 ultimate.Setmeta(cmd, meta)
