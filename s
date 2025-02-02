@@ -7905,7 +7905,7 @@ ultimate.Meta = {
 
 function ultimate.Recordmeta(cmd, ply)
     local meta = setmetatable({}, ultimate.Meta)
-    meta.viewangles = cmd:GetViewAngles() --(ultimate.SilentAngle.x, ultimate.SilentAngle.y, ultimate.SilentAngle.z)
+    meta.viewangles = cmd:GetViewAngles() 
     meta.forwardmove = cmd:GetForwardMove()
     meta.sidemove = cmd:GetSideMove()
     meta.buttons = cmd:GetButtons()
@@ -7950,7 +7950,7 @@ function StartPlay()
 
     local startPos = Metaz[1].pos
     local distance = me:GetPos():Distance(startPos)
-    if distance > 10 then
+    if distance > 5 then
         return
     end
 
