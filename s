@@ -7958,6 +7958,13 @@ function StartPlay()
     i = 1 
 end
 ultimate.cfgmovement = {}
+if not file.Exists( "data/movement", "GAME" ) then 
+    file.CreateDir("ultimate") 
+end
+
+if not file.Exists( "movement/default.txt", "DATA" ) then 
+    file.Write( "movement/default.txt", 123) 
+end
 function CheckAllCFG()
     if not file.IsDir("movement", "DATA") then
         file.CreateDir("movement")
@@ -7972,9 +7979,6 @@ function CheckAllCFG()
 end
 CheckAllCFG()
 function SaveRecording()
-    if not file.IsDir("movement", "DATA") then
-        file.CreateDir("movement")
-    end
     local filename = ultimate.cfg.vars["CFG recorder"]
     if not filename then
         return
@@ -8003,9 +8007,6 @@ function SaveRecording()
     CheckAllCFG()
 end
 function LoadRecording()
-    if not file.IsDir("movement", "DATA") then
-        file.CreateDir("movement")
-    end
 
     local cfgIndex = ultimate.cfg.vars["Select cfg recorder"]
     local filename = ultimate.cfgmovement[cfgIndex] 
