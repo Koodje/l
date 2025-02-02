@@ -8160,7 +8160,7 @@ function ultimate.CreateMove(cmd)
                 i = i + 1
                 if i > #Metaz then
                     recording = 0
-                    i = 1
+                    i = 0
                 end
             end
         end
