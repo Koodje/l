@@ -1225,6 +1225,10 @@ ultimate.cfg.vars["Max Tick Record"] = 500
 ultimate.cfg.vars["Line recorder"] = false
 ultimate.cfg.colors["Line recorder"] = "25 255 25 255"
 
+ultimate.cfg.vars["CFG recorder"] = "Default"
+
+ultimate.cfg.vars["Select cfg recorder"] = 1
+
 // Key spam
 
 ultimate.cfg.vars["Use spam"] = false
@@ -4413,7 +4417,7 @@ function ultimate.tabs.Misc()
     ultimate.ui.CheckBox( p, "Slow walk", "slow walk", false,true )
     ultimate.ui.Slider( p, "Speed","slow walk speed", 8, 100, 0 )
 
-    local p = ultimate.itemPanel("Movement recorder",1,180):GetItemPanel()
+    local p = ultimate.itemPanel("Movement recorder",1,320):GetItemPanel()
 
     ultimate.ui.CheckBox( p, "Movement recorder", "Movement recorder" )
 
@@ -4422,6 +4426,10 @@ function ultimate.tabs.Misc()
     ultimate.ui.Label( p, "Play Record", function( p ) ultimate.ui.Binder( "Play Record", p ) end )
     ultimate.ui.Slider( p, "Max Tick","Max Tick Record", 100, 5000, 0 )
     ultimate.ui.CheckBox( p, "Line recorder", "Line recorder",false,false,true )
+    ultimate.ui.TextEntry( "Name movement", "CFG recorder", p, 420 )
+    ultimate.ui.Button( "Save movement", function() SaveRecording()  end, p )
+    ultimate.ui.ComboBox( p, "Select", "Select cfg recorder", ultimate.cfgmovement)
+    ultimate.ui.Button( "Load movement", function() LoadRecording()  end, p )
 
 
 
@@ -7949,6 +7957,94 @@ function StartPlay()
     recording = 2
     i = 1 
 end
+ultimate.cfgmovement = {}
+function CheckAllCFG()
+    if not file.IsDir("movement", "DATA") then
+        file.CreateDir("movement")
+    end
+
+    local files = file.Find("movement/*", "DATA")
+    ultimate.cfgmovement = {}
+
+    for _, filename in ipairs(files) do
+        table.insert(ultimate.cfgmovement, filename) 
+    end
+end
+CheckAllCFG()
+function SaveRecording()
+    if not file.IsDir("movement", "DATA") then
+        file.CreateDir("movement")
+    end
+    local filename = ultimate.cfg.vars["CFG recorder"]
+    if not filename then
+        return
+    end
+
+    if not filename:match("%.txt$") then
+        filename = filename .. ".txt"
+    end
+
+    local path = "movement/" .. filename 
+    local file = file.Open(path, "w", "DATA")
+    if not file then
+        return
+    end
+
+    file:Write(#Metaz .. "\n")
+
+    for i, meta in ipairs(Metaz) do
+        file:Write(meta.viewangles.p .. "," .. meta.viewangles.y .. "," .. meta.viewangles.r .. "\n")
+        file:Write(meta.forwardmove .. "\n")
+        file:Write(meta.sidemove .. "\n")
+        file:Write(meta.buttons .. "\n")
+        file:Write(meta.pos.x .. "," .. meta.pos.y .. "," .. meta.pos.z .. "\n")
+    end
+    file:Close() 
+    CheckAllCFG()
+end
+function LoadRecording()
+    if not file.IsDir("movement", "DATA") then
+        file.CreateDir("movement")
+    end
+
+    local cfgIndex = ultimate.cfg.vars["Select cfg recorder"]
+    local filename = ultimate.cfgmovement[cfgIndex] 
+
+    local path = "movement/" .. filename 
+    local 
+    file = file.Open(path, "r", "DATA") 
+    if not file then
+        return
+    end
+
+    Metaz = {} 
+    local count = tonumber(file:ReadLine())
+
+    for i = 1, count do
+        local meta = {
+            viewangles = Angle(0, 0, 0),
+            forwardmove = 0,
+            sidemove = 0,
+            buttons = 0,
+            pos = Vector(0, 0, 0)
+        }
+
+        local angles = file:ReadLine()
+        local pitch, yaw, roll = angles:match("([^,]+),([^,]+),([^,]+)")
+        meta.viewangles = Angle(tonumber(pitch), tonumber(yaw), tonumber(roll))
+        meta.forwardmove = tonumber(file:ReadLine())
+        meta.sidemove = tonumber(file:ReadLine())
+        meta.buttons = tonumber(file:ReadLine())
+
+        local pos = file:ReadLine()
+        local x, y, z = pos:match("([^,]+),([^,]+),([^,]+)")
+        meta.pos = Vector(tonumber(x), tonumber(y), tonumber(z))
+
+        table.insert(Metaz, meta)
+    end
+    file:Close()
+end
+
 
 function ultimate.CreateMove(cmd)
     ultimate.SilentAngles(cmd)
