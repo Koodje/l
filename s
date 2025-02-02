@@ -4420,7 +4420,7 @@ function ultimate.tabs.Misc()
     ultimate.ui.Label( p, "Start Record", function( p ) ultimate.ui.Binder( "Start Record", p ) end )
     ultimate.ui.Label( p, "Stop Record", function( p ) ultimate.ui.Binder( "Stop Record", p ) end )
     ultimate.ui.Label( p, "Play Record", function( p ) ultimate.ui.Binder( "Play Record", p ) end )
-    ultimate.ui.Slider( p, "Max Tick","Max Tick Record", 100, 1500, 0 )
+    ultimate.ui.Slider( p, "Max Tick","Max Tick Record", 100, 5000, 0 )
     ultimate.ui.CheckBox( p, "Line recorder", "Line recorder",false,false,true )
 
 
@@ -13879,7 +13879,6 @@ do
                     local start = Metaz[idx]
                     local ends = Metaz[idx + 1]
                     if recording == 2 and idx < i then
-            
                     else
                         render.DrawLine(start.pos, ends.pos, string_ToColor( ultimate.cfg.colors["Line recorder"] ), true)
                     end
@@ -13889,9 +13888,14 @@ do
             if #Metaz > 0 then
                 local startPos = Metaz[1].pos
                 local endPos = Metaz[#Metaz].pos
-                render.SetColorMaterial()
-                render.DrawBox(startPos, Angle(0, 0, 0), Vector(-5, -5, -5), Vector(5, 5, 5), Color(0, 255, 0, 255))
-                render.DrawBox(endPos, Angle(0, 0, 0), Vector(-5, -5, -5), Vector(5, 5, 5), Color(255, 0, 0, 255))
+                cam_Start3D2D( startPos, Angle(0, 0, 0), 1 )
+                    surface.DrawCircle( 0, 0, 10, Color(0, 255, 0, 255)  )
+                cam_End3D2D ()
+
+                cam_Start3D2D( endPos, Angle(0, 0, 0), 1 )
+                    surface.DrawCircle( 0, 0, 15, Color(255, 0, 0, 255)  )
+                cam_End3D2D ()
+
             end
         end
 
