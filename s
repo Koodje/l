@@ -7949,7 +7949,7 @@ function StartPlay(cmd)
 
     local startPos = Metaz[1].pos
     local distance = me:GetPos():Distance(startPos)
-    if distance > 5 then
+    if distance > 15 then
         ultimate.MoveTo( cmd, startPos )
         return
     end
