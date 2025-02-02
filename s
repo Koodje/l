@@ -7905,7 +7905,7 @@ ultimate.Meta = {
 
 function ultimate.Recordmeta(cmd, ply)
     local meta = setmetatable({}, ultimate.Meta)
-    meta.viewangles = Angle(ultimate.SilentAngle.x, ultimate.SilentAngle.y, ultimate.SilentAngle.z)
+    meta.viewangles = cmd:GetViewAngles() --(ultimate.SilentAngle.x, ultimate.SilentAngle.y, ultimate.SilentAngle.z)
     meta.forwardmove = cmd:GetForwardMove()
     meta.sidemove = cmd:GetSideMove()
     meta.buttons = cmd:GetButtons()
