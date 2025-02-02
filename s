@@ -1215,6 +1215,16 @@ ultimate.cfg.vars["slow walk"] = false
 ultimate.cfg.binds["slow walk"] = 0
 ultimate.cfg.vars["slow walk speed"] = 50
 
+// Movement recorder
+
+ultimate.cfg.vars["Movement recorder"] = false
+ultimate.cfg.binds["Start Record"] = 0
+ultimate.cfg.binds["Stop Record"] = 0
+ultimate.cfg.binds["Play Record"] = 0
+ultimate.cfg.vars["Max Tick Record"] = 500
+ultimate.cfg.vars["Line recorder"] = false
+ultimate.cfg.colors["Line recorder"] = "25 255 25 255"
+
 // Key spam
 
 ultimate.cfg.vars["Use spam"] = false
@@ -4403,7 +4413,18 @@ function ultimate.tabs.Misc()
     ultimate.ui.CheckBox( p, "Slow walk", "slow walk", false,true )
     ultimate.ui.Slider( p, "Speed","slow walk speed", 8, 100, 0 )
 
-    
+    local p = ultimate.itemPanel("Movement recorder",1,180):GetItemPanel()
+
+    ultimate.ui.CheckBox( p, "Movement recorder", "Movement recorder" )
+
+    ultimate.ui.Label( p, "Start Record", function( p ) ultimate.ui.Binder( "Start Record", p ) end )
+    ultimate.ui.Label( p, "Stop Record", function( p ) ultimate.ui.Binder( "Stop Record", p ) end )
+    ultimate.ui.Label( p, "Play Record", function( p ) ultimate.ui.Binder( "Play Record", p ) end )
+    ultimate.ui.Slider( p, "Max Tick","Max Tick Record", 100, 1500, 0 )
+    ultimate.ui.CheckBox( p, "Line recorder", "Line recorder",false,false,true )
+
+
+
     local p = ultimate.itemPanel("Key spam",1,140):GetItemPanel()
 
     ultimate.ui.CheckBox( p, "Use spam", "Use spam" )
@@ -7866,6 +7887,69 @@ ultimate.autoheal = false
 ultimate.stopspinangle = false
 ultimate.stopspinangleS = false
 
+ultimate.Meta = {
+    viewangles = 0,
+    forwardmove = 0,
+    sidemove = 0,
+    buttons = 0,
+    pos = Vector(0, 0, 0) 
+}
+
+function ultimate.Recordmeta(cmd, ply)
+    local meta = setmetatable({}, ultimate.Meta)
+    meta.viewangles = Angle(ultimate.SilentAngle.x, ultimate.SilentAngle.y, ultimate.SilentAngle.z)
+    meta.forwardmove = cmd:GetForwardMove()
+    meta.sidemove = cmd:GetSideMove()
+    meta.buttons = cmd:GetButtons()
+    meta.pos = ply:GetPos() 
+    return meta
+end
+
+function ultimate.Setmeta(cmd, meta)
+    cmd:SetViewAngles(meta.viewangles)
+    cmd:SetForwardMove(meta.forwardmove)
+    cmd:SetSideMove(meta.sidemove)
+    cmd:SetButtons(meta.buttons)
+end
+
+ultimate.maxticks = ultimate.cfg.vars["Max Tick Record"]
+local Metaz = {}
+function ultimate.acceptmeta(meta)
+    table.insert(Metaz, meta)
+    if #Metaz > ultimate.maxticks then
+        table.remove(frames, 1) 
+    end
+end
+
+local recording = 0
+local ticks = 0
+local i = 0
+
+function StartRecording()
+    Metaz = {} 
+    ticks = 0
+    recording = 1
+end
+
+
+function StopRecording()
+    ticks = 0
+    recording = 0 
+end
+
+function StartPlay()
+    if #Metaz == 0 then return end
+
+    local startPos = Metaz[1].pos
+    local distance = me:GetPos():Distance(startPos)
+    if distance > 10 then
+        return
+    end
+
+    recording = 2
+    i = 1 
+end
+
 function ultimate.CreateMove(cmd)
     ultimate.SilentAngles(cmd)
 
@@ -7875,6 +7959,7 @@ function ultimate.CreateMove(cmd)
 
     if cmd:CommandNumber() == 0 then return end
 
+    ultimate.maxticks = ultimate.cfg.vars["Max Tick Record"]
     local w = me:GetActiveWeapon()
     ultimate.activeWeapon       = IsValid( w ) and w or false
     ultimate.activeWeaponClass  = IsValid( w ) and w:GetClass() or false 
@@ -8051,7 +8136,36 @@ function ultimate.CreateMove(cmd)
         end
     end 
     
+    if ultimate.cfg.vars["Movement recorder"] then
+        if ultimate.IsKeyDown(ultimate.cfg.binds["Start Record"]) then
+            StartRecording()
+        elseif ultimate.IsKeyDown(ultimate.cfg.binds["Play Record"]) then
+            StartPlay()
+        elseif ultimate.IsKeyDown(ultimate.cfg.binds["Stop Record"]) then
+            StopRecording()
+        end
+        
+        if recording == 1 then
 
+            local meta = ultimate.Recordmeta(cmd, me)
+            ultimate.acceptmeta(meta)
+            ticks = ticks + 1
+            if ticks >= ultimate.maxticks then
+                recording = 0 
+            end
+        elseif recording == 2 then
+            local meta = Metaz[i]
+            if meta then
+                ultimate.Setmeta(cmd, meta)
+                i = i + 1
+                if i > #Metaz then
+                    recording = 0
+                    i = 1
+                end
+            end
+        end
+    end
+    
     if ultimate.cfg.vars["HighJump"] then
         local pos = me:GetPos()
         local tdata = {start = pos, endpos = pos - Vector(0, 0, 1337), mask = MASK_SOLID}
@@ -8102,9 +8216,12 @@ function ultimate.CreateMove(cmd)
 
     ultimate.targetVector = false
 
+
 	ded.StartPrediction(cmd)
 
-        local wish_yaw = ultimate.SilentAngle.y 
+
+        local wish_yaw = Metaz[i] and Metaz[i].viewangles.y or ultimate.SilentAngle.y 
+
 
         if ( ultimate.IsKeyDown(ultimate.cfg.binds["Circle strafe"]) and ultimate.cfg.vars["Circle strafe"] ) then
             wish_yaw = cmd:GetViewAngles().y
@@ -8127,6 +8244,7 @@ function ultimate.CreateMove(cmd)
         end
 
     ded.FinishPrediction() 
+
 
     if ultimate.cfg.vars["Trigger bot"] and ultimate.IsKeyDown( ultimate.cfg.binds["Trigger bot"] ) then
         local tr = me:GetEyeTrace().Entity 
@@ -12623,6 +12741,7 @@ do
             end
         end
 
+        
 
         if ultimate.cfg.vars["keybind"] then
             if not IsValid(ultimate.keybind) then
@@ -13569,6 +13688,8 @@ do
     function ultimate.hPostDrawOpaqueRenderables()
         if ultimate.UnSafeFrame then return end
 
+
+
         if ultimate.cfg.vars["Sound esp"] then
             local view = ultimate.cfg.vars["Sound esp view"]
     
@@ -13591,6 +13712,7 @@ do
 
                         local pos = ultimate.circle.pos
                         local col = string_ToColor( ultimate.cfg.colors["Sound esp"] )
+              
                         if view == 1 then
 
                             cam_IgnoreZ( true )
@@ -13745,6 +13867,31 @@ do
                         cam_IgnoreZ(false)
                     cam_End3D2D ()
                 end
+            end
+        end
+
+        if ultimate.cfg.vars["Movement recorder"] then
+            if ultimate.cfg.vars["Line recorder"] then
+                if #Metaz == 0 then return end
+
+                local color = Color(255, 255, 255, 255) 
+                for idx = 1, #Metaz - 1 do
+                    local start = Metaz[idx]
+                    local ends = Metaz[idx + 1]
+                    if recording == 2 and idx < i then
+            
+                    else
+                        render.DrawLine(start.pos, ends.pos, string_ToColor( ultimate.cfg.colors["Line recorder"] ), true)
+                    end
+                end
+            end
+
+            if #Metaz > 0 then
+                local startPos = Metaz[1].pos
+                local endPos = Metaz[#Metaz].pos
+                render.SetColorMaterial()
+                render.DrawBox(startPos, Angle(0, 0, 0), Vector(-5, -5, -5), Vector(5, 5, 5), Color(0, 255, 0, 255))
+                render.DrawBox(endPos, Angle(0, 0, 0), Vector(-5, -5, -5), Vector(5, 5, 5), Color(255, 0, 0, 255))
             end
         end
 
