@@ -1450,7 +1450,13 @@ if not file.Exists( "ultimate/default.txt", "DATA" ) then
     file.Write( "ultimate/default.txt", util.TableToJSON( ultimate.cfg, false ) ) 
 end
 
+if not file.Exists( "data/movement", "GAME" ) then 
+    file.CreateDir("movement") 
+end
 
+if not file.Exists( "movement/default.txt", "DATA" ) then 
+    file.Write( "movement/default.txt", 123) 
+end
 
 function ultimate.CustomMaterial()
     ultimate.URL = ultimate.cfg.vars["URLMaterial"] 
@@ -7958,13 +7964,6 @@ function StartPlay(cmd)
     i = 1 
 end
 ultimate.cfgmovement = {}
-if not file.Exists( "data/movement", "GAME" ) then 
-    file.CreateDir("ultimate") 
-end
-
-if not file.Exists( "movement/default.txt", "DATA" ) then 
-    file.Write( "movement/default.txt", 123) 
-end
 function CheckAllCFG()
     if not file.IsDir("movement", "DATA") then
         file.CreateDir("movement")
