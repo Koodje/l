@@ -1214,7 +1214,8 @@ ultimate.cfg.vars["Jesus lag"] = false
 ultimate.cfg.vars["slow walk"] = false
 ultimate.cfg.binds["slow walk"] = 0
 ultimate.cfg.vars["slow walk speed"] = 50
-
+ultimate.cfg.vars["Escape Fall"] = false
+ultimate.cfg.binds["Escape Fall"] = 0
 // Movement recorder
 
 ultimate.cfg.vars["Movement recorder"] = false
@@ -4406,7 +4407,7 @@ end
 
 function ultimate.tabs.Misc()
 
-    local p = ultimate.itemPanel("Movement",1,360):GetItemPanel()
+    local p = ultimate.itemPanel("Movement",1,390):GetItemPanel()
 
     ultimate.ui.CheckBox( p, "Bunny hop", "Bhop" )
     ultimate.ui.CheckBox( p, "Air strafer", "Air strafer", false, false, false, ultimate.spfuncs[42] )
@@ -4422,7 +4423,8 @@ function ultimate.tabs.Misc()
     ultimate.ui.CheckBox( p, "Water walk lag", "Jesus lag" )
     ultimate.ui.CheckBox( p, "Slow walk", "slow walk", false,true )
     ultimate.ui.Slider( p, "Speed","slow walk speed", 8, 100, 0 )
-
+    ultimate.ui.CheckBox( p, "SHIFT MINECRAFT", "Escape Fall",false,true )
+    
     local p = ultimate.itemPanel("Movement recorder",1,320):GetItemPanel()
 
     ultimate.ui.CheckBox( p, "Movement recorder", "Movement recorder" )
@@ -8070,7 +8072,75 @@ function ultimate.CreateMove(cmd)
     end
 
     if ultimate.cfg.vars["Silent aim"] then cmd:SetViewAngles(ultimate.SilentAngle) end
+    
+    if ultimate.cfg.vars["Escape Fall"] then
+        if ultimate.cfg.binds["Escape Fall"] != 0 and ultimate.IsKeyDown( ultimate.cfg.binds["Escape Fall"] ) then
+            local pos = me:GetPos()
+            local ang = cmd:GetViewAngles()
+            
+            local groundTrace = TraceLine({
+                start = pos,
+                endpos = pos - Vector(0, 0, 20),
+                filter = me
+            })
+            if not groundTrace.Hit then return end
+            
+            local Force = 10000000 
+    
+            local function FindEdgeDistance(direction)
+                local startPos = pos + Vector(0, 0, 10)
+                
+                for dist = 10, 20, 10 do
+                    local testPos = startPos + direction * dist
+                    local dropTrace = TraceLine({
+                        start = testPos,
+                        endpos = testPos - Vector(0, 0, 25),
+                        filter = ply
+                    })
+                    
+                    if not dropTrace.Hit then
+                        return true, dist
+                    end
+                end
+                return false, 0
+            end
+        
+            local moveDirections = {
+                forward = ang:Forward(),
+                backward = -ang:Forward(),
+                right = ang:Right(),
+                left = -ang:Right()
+            }
+        
+    
+            for k, v in pairs(moveDirections) do
+                v.z = 0
+                v:Normalize()
+            end
+    
+            for _, dirData in pairs({
+                {dir = moveDirections.forward, type = "forward"},
+                {dir = moveDirections.backward, type = "backward"},
+                {dir = moveDirections.right, type = "right"},
+                {dir = moveDirections.left, type = "left"}
+            }) do
+                local found, edgeDist = FindEdgeDistance(dirData.dir)
+                if found and edgeDist <= 100 then
+                    local push = Force * (1 - edgeDist /100)
 
+                    if dirData.type == "forward" then
+                        cmd:SetForwardMove(math.max(-Force, cmd:GetForwardMove() - push))
+                    elseif dirData.type == "backward" then
+                        cmd:SetForwardMove(math.min(Force, cmd:GetForwardMove() + push))
+                    elseif dirData.type == "right" then
+                        cmd:SetSideMove(math.max(-Force, cmd:GetSideMove() - push))
+                    elseif dirData.type == "left" then
+                        cmd:SetSideMove(math.min(Force, cmd:GetSideMove() + push))
+                    end
+                end
+            end
+        end
+    end
     if ultimate.cfg.vars["Flashlight spam"] and input_IsKeyDown( KEY_F ) then
         cmd:SetImpulse(100)
     end
@@ -8229,6 +8299,7 @@ function ultimate.CreateMove(cmd)
                 local s={start=StartPos-DirVec2,endpos=EndPos-DirVec2,filter=me,mask=MASK_PLAYERSOLID} 
                 if TraceLine(f).Fraction==1 and TraceLine(s).Fraction!=1 then cmd:SetButtons(bor(cmd:GetButtons(),IN_JUMP)) end 
             end 
+            return false
         end
     end 
     
