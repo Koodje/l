@@ -1550,6 +1550,89 @@ function ultimate.LoadConfig()
 
 end
 
+ultimate.cfgmovement = {}
+function CheckAllCFG()
+    if not file.IsDir("movement", "DATA") then
+        file.CreateDir("movement")
+    end
+
+    local files = file.Find("movement/*", "DATA")
+    ultimate.cfgmovement = {}
+
+    for _, filename in ipairs(files) do
+        table.insert(ultimate.cfgmovement, filename) 
+    end
+end
+CheckAllCFG()
+function SaveRecording()
+    local filename = ultimate.cfg.vars["CFG recorder"]
+    if not filename then
+        return
+    end
+
+    if not filename:match("%.txt$") then
+        filename = filename .. ".txt"
+    end
+
+    local path = "movement/" .. filename 
+    local file = file.Open(path, "w", "DATA")
+    if not file then
+        return
+    end
+
+    file:Write(#Metaz .. "\n")
+
+    for i, meta in ipairs(Metaz) do
+        file:Write(meta.viewangles.p .. "," .. meta.viewangles.y .. "," .. meta.viewangles.r .. "\n")
+        file:Write(meta.forwardmove .. "\n")
+        file:Write(meta.sidemove .. "\n")
+        file:Write(meta.buttons .. "\n")
+        file:Write(meta.pos.x .. "," .. meta.pos.y .. "," .. meta.pos.z .. "\n")
+    end
+    file:Close() 
+    CheckAllCFG()
+end
+function LoadRecording()
+
+    local cfgIndex = ultimate.cfg.vars["Select cfg recorder"]
+    local filename = ultimate.cfgmovement[cfgIndex] 
+
+    local path = "movement/" .. filename 
+    local 
+    file = file.Open(path, "r", "DATA") 
+    if not file then
+        return
+    end
+
+    Metaz = {} 
+    local count = tonumber(file:ReadLine())
+
+    for i = 1, count do
+        local meta = {
+            viewangles = Angle(0, 0, 0),
+            forwardmove = 0,
+            sidemove = 0,
+            buttons = 0,
+            pos = Vector(0, 0, 0)
+        }
+
+        local angles = file:ReadLine()
+        local pitch, yaw, roll = angles:match("([^,]+),([^,]+),([^,]+)")
+        meta.viewangles = Angle(tonumber(pitch), tonumber(yaw), tonumber(roll))
+        meta.forwardmove = tonumber(file:ReadLine())
+        meta.sidemove = tonumber(file:ReadLine())
+        meta.buttons = tonumber(file:ReadLine())
+
+        local pos = file:ReadLine()
+        local x, y, z = pos:match("([^,]+),([^,]+),([^,]+)")
+        meta.pos = Vector(tonumber(x), tonumber(y), tonumber(z))
+
+        table.insert(Metaz, meta)
+    end
+    file:Close()
+end
+
+
 function ultimate.DeleteConfig()
     local str = ultimate.configs[ ultimate.cfg.vars["Selected config"] ]
     if not file_Exists( "data/ultimate/"..str..".txt", "GAME" ) then return end
@@ -7924,11 +8007,10 @@ end
 function ultimate.Setmeta(cmd, meta)
     cmd:SetForwardMove(meta.forwardmove)
     cmd:SetSideMove(meta.sidemove)
-    cmd:AddKey(IN_SPEED)
+    cmd:SetViewAngles(meta.viewangles)
     cmd:SetButtons(meta.buttons)
-    ultimate.MovementFix( cmd, meta.viewangles.y )
+    ultimate.MovementFix(cmd, meta.viewangles.y)
 end
-
 ultimate.maxticks = ultimate.cfg.vars["Max Tick Record"]
 local Metaz = {}
 function ultimate.acceptmeta(meta)
@@ -7958,96 +8040,13 @@ function StartPlay(cmd)
 
     local startPos = Metaz[1].pos
     local distance = me:GetPos():Distance(startPos)
-    if distance > 15 then
+    if distance > 5 then
         ultimate.MoveTo( cmd, startPos )
         return
     end
-
     recording = 2
     i = 1 
 end
-ultimate.cfgmovement = {}
-function CheckAllCFG()
-    if not file.IsDir("movement", "DATA") then
-        file.CreateDir("movement")
-    end
-
-    local files = file.Find("movement/*", "DATA")
-    ultimate.cfgmovement = {}
-
-    for _, filename in ipairs(files) do
-        table.insert(ultimate.cfgmovement, filename) 
-    end
-end
-CheckAllCFG()
-function SaveRecording()
-    local filename = ultimate.cfg.vars["CFG recorder"]
-    if not filename then
-        return
-    end
-
-    if not filename:match("%.txt$") then
-        filename = filename .. ".txt"
-    end
-
-    local path = "movement/" .. filename 
-    local file = file.Open(path, "w", "DATA")
-    if not file then
-        return
-    end
-
-    file:Write(#Metaz .. "\n")
-
-    for i, meta in ipairs(Metaz) do
-        file:Write(meta.viewangles.p .. "," .. meta.viewangles.y .. "," .. meta.viewangles.r .. "\n")
-        file:Write(meta.forwardmove .. "\n")
-        file:Write(meta.sidemove .. "\n")
-        file:Write(meta.buttons .. "\n")
-        file:Write(meta.pos.x .. "," .. meta.pos.y .. "," .. meta.pos.z .. "\n")
-    end
-    file:Close() 
-    CheckAllCFG()
-end
-function LoadRecording()
-
-    local cfgIndex = ultimate.cfg.vars["Select cfg recorder"]
-    local filename = ultimate.cfgmovement[cfgIndex] 
-
-    local path = "movement/" .. filename 
-    local 
-    file = file.Open(path, "r", "DATA") 
-    if not file then
-        return
-    end
-
-    Metaz = {} 
-    local count = tonumber(file:ReadLine())
-
-    for i = 1, count do
-        local meta = {
-            viewangles = Angle(0, 0, 0),
-            forwardmove = 0,
-            sidemove = 0,
-            buttons = 0,
-            pos = Vector(0, 0, 0)
-        }
-
-        local angles = file:ReadLine()
-        local pitch, yaw, roll = angles:match("([^,]+),([^,]+),([^,]+)")
-        meta.viewangles = Angle(tonumber(pitch), tonumber(yaw), tonumber(roll))
-        meta.forwardmove = tonumber(file:ReadLine())
-        meta.sidemove = tonumber(file:ReadLine())
-        meta.buttons = tonumber(file:ReadLine())
-
-        local pos = file:ReadLine()
-        local x, y, z = pos:match("([^,]+),([^,]+),([^,]+)")
-        meta.pos = Vector(tonumber(x), tonumber(y), tonumber(z))
-
-        table.insert(Metaz, meta)
-    end
-    file:Close()
-end
-
 
 function ultimate.CreateMove(cmd)
     ultimate.SilentAngles(cmd)
