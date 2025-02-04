@@ -7904,7 +7904,7 @@ ultimate.stopspinangle = false
 ultimate.stopspinangleS = false
 
 ultimate.Meta = {
-    viewangles = 0,
+    viewangles = Angle(0,0,0),
     forwardmove = 0,
     sidemove = 0,
     buttons = 0,
@@ -7922,10 +7922,11 @@ function ultimate.Recordmeta(cmd, ply)
 end
 
 function ultimate.Setmeta(cmd, meta)
-    cmd:SetViewAngles(meta.viewangles)
     cmd:SetForwardMove(meta.forwardmove)
     cmd:SetSideMove(meta.sidemove)
+    cmd:AddKey(IN_SPEED)
     cmd:SetButtons(meta.buttons)
+    ultimate.MovementFix( cmd, meta.viewangles.y )
 end
 
 ultimate.maxticks = ultimate.cfg.vars["Max Tick Record"]
@@ -8388,7 +8389,7 @@ function ultimate.CreateMove(cmd)
 	ded.StartPrediction(cmd)
 
 
-        local wish_yaw = Metaz[i] and Metaz[i].viewangles.y or ultimate.SilentAngle.y 
+        local wish_yaw = ultimate.SilentAngle.y 
 
 
         if ( ultimate.IsKeyDown(ultimate.cfg.binds["Circle strafe"]) and ultimate.cfg.vars["Circle strafe"] ) then
