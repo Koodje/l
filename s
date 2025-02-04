@@ -15256,8 +15256,10 @@ function ultimate.RemoveAllHooks()
 end
 
 function ultimate.hCalcMainActivity(ply, velocity)
-    if ultimate.cfg.vars[ "Tpos" ] then
-        return -1, -1
+    if ply != me then
+        if ultimate.cfg.vars["Tpos"] then
+            return -1, -1
+        end
     end
 end
 
