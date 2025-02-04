@@ -1216,9 +1216,12 @@ ultimate.cfg.binds["slow walk"] = 0
 ultimate.cfg.vars["slow walk speed"] = 50
 ultimate.cfg.vars["Escape Fall"] = false
 ultimate.cfg.binds["Escape Fall"] = 0
+
 // Movement recorder
 
 ultimate.cfg.vars["Movement recorder"] = false
+ultimate.cfg.colors["Movement recorder"] = "25 255 25 255"
+ultimate.cfg.colors["Movement recorderEnd"] = "255 25 25 255"
 ultimate.cfg.binds["Start Record"] = 0
 ultimate.cfg.binds["Stop Record"] = 0
 ultimate.cfg.binds["Play Record"] = 0
@@ -1451,14 +1454,6 @@ if not file.Exists( "ultimate/default.txt", "DATA" ) then
     file.Write( "ultimate/default.txt", util.TableToJSON( ultimate.cfg, false ) ) 
 end
 
-if not file.Exists( "data/movement", "GAME" ) then 
-    file.CreateDir("movement") 
-end
-
-if not file.Exists( "movement/default.txt", "DATA" ) then 
-    file.Write( "movement/default.txt", 123) 
-end
-
 function ultimate.CustomMaterial()
     ultimate.URL = ultimate.cfg.vars["URLMaterial"] 
     ultimate.Name = ultimate.cfg.vars["NameMaterial"]
@@ -1549,89 +1544,6 @@ function ultimate.LoadConfig()
     v22:SetVector( "$cloakcolortint", Vector( col3.r / 255, col3.g / 255, col3.b / 255 ) )
 
 end
-
-ultimate.cfgmovement = {}
-function CheckAllCFG()
-    if not file.IsDir("movement", "DATA") then
-        file.CreateDir("movement")
-    end
-
-    local files = file.Find("movement/*", "DATA")
-    ultimate.cfgmovement = {}
-
-    for _, filename in ipairs(files) do
-        table.insert(ultimate.cfgmovement, filename) 
-    end
-end
-CheckAllCFG()
-function SaveRecording()
-    local filename = ultimate.cfg.vars["CFG recorder"]
-    if not filename then
-        return
-    end
-
-    if not filename:match("%.txt$") then
-        filename = filename .. ".txt"
-    end
-
-    local path = "movement/" .. filename 
-    local file = file.Open(path, "w", "DATA")
-    if not file then
-        return
-    end
-
-    file:Write(#Metaz .. "\n")
-
-    for i, meta in ipairs(Metaz) do
-        file:Write(meta.viewangles.p .. "," .. meta.viewangles.y .. "," .. meta.viewangles.r .. "\n")
-        file:Write(meta.forwardmove .. "\n")
-        file:Write(meta.sidemove .. "\n")
-        file:Write(meta.buttons .. "\n")
-        file:Write(meta.pos.x .. "," .. meta.pos.y .. "," .. meta.pos.z .. "\n")
-    end
-    file:Close() 
-    CheckAllCFG()
-end
-function LoadRecording()
-
-    local cfgIndex = ultimate.cfg.vars["Select cfg recorder"]
-    local filename = ultimate.cfgmovement[cfgIndex] 
-
-    local path = "movement/" .. filename 
-    local 
-    file = file.Open(path, "r", "DATA") 
-    if not file then
-        return
-    end
-
-    Metaz = {} 
-    local count = tonumber(file:ReadLine())
-
-    for i = 1, count do
-        local meta = {
-            viewangles = Angle(0, 0, 0),
-            forwardmove = 0,
-            sidemove = 0,
-            buttons = 0,
-            pos = Vector(0, 0, 0)
-        }
-
-        local angles = file:ReadLine()
-        local pitch, yaw, roll = angles:match("([^,]+),([^,]+),([^,]+)")
-        meta.viewangles = Angle(tonumber(pitch), tonumber(yaw), tonumber(roll))
-        meta.forwardmove = tonumber(file:ReadLine())
-        meta.sidemove = tonumber(file:ReadLine())
-        meta.buttons = tonumber(file:ReadLine())
-
-        local pos = file:ReadLine()
-        local x, y, z = pos:match("([^,]+),([^,]+),([^,]+)")
-        meta.pos = Vector(tonumber(x), tonumber(y), tonumber(z))
-
-        table.insert(Metaz, meta)
-    end
-    file:Close()
-end
-
 
 function ultimate.DeleteConfig()
     local str = ultimate.configs[ ultimate.cfg.vars["Selected config"] ]
@@ -4508,19 +4420,14 @@ function ultimate.tabs.Misc()
     ultimate.ui.Slider( p, "Speed","slow walk speed", 8, 100, 0 )
     ultimate.ui.CheckBox( p, "SHIFT MINECRAFT", "Escape Fall",false,true )
     
-    local p = ultimate.itemPanel("Movement recorder",1,320):GetItemPanel()
+    local p = ultimate.itemPanel("Movement recorder",1,180):GetItemPanel()
 
-    ultimate.ui.CheckBox( p, "Movement recorder", "Movement recorder" )
-
+    ultimate.ui.CheckBox( p, "Movement recorder", "Movement recorder",false,false,true,false,false,function(p) ultimate.ui.ColorPicker( "Movement recorderEnd", p ) end )
     ultimate.ui.Label( p, "Start Record", function( p ) ultimate.ui.Binder( "Start Record", p ) end )
     ultimate.ui.Label( p, "Stop Record", function( p ) ultimate.ui.Binder( "Stop Record", p ) end )
     ultimate.ui.Label( p, "Play Record", function( p ) ultimate.ui.Binder( "Play Record", p ) end )
     ultimate.ui.Slider( p, "Max Tick","Max Tick Record", 100, 5000, 0 )
     ultimate.ui.CheckBox( p, "Line recorder", "Line recorder",false,false,true )
-    ultimate.ui.TextEntry( "Name movement", "CFG recorder", p, 420 )
-    ultimate.ui.Button( "Save movement", function() SaveRecording()  end, p )
-    ultimate.ui.ComboBox( p, "Select", "Select cfg recorder", ultimate.cfgmovement)
-    ultimate.ui.Button( "Load movement", function() LoadRecording()  end, p )
 
 
 
@@ -14056,11 +13963,10 @@ do
                 local startPos = Metaz[1].pos
                 local endPos = Metaz[#Metaz].pos
                 cam_Start3D2D( startPos, Angle(0, 0, 0), 1 )
-                    surface.DrawCircle( 0, 0, 10, Color(0, 255, 0, 255)  )
+                    surface.DrawCircle( 0, 0, 10, string_ToColor( ultimate.cfg.colors["Movement recorder"]  ))
                 cam_End3D2D ()
-
                 cam_Start3D2D( endPos, Angle(0, 0, 0), 1 )
-                    surface.DrawCircle( 0, 0, 15, Color(255, 0, 0, 255)  )
+                    surface.DrawCircle( 0, 0, 15, string_ToColor( ultimate.cfg.colors["Movement recorderEnd"]  ))
                 cam_End3D2D ()
 
             end
