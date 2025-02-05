@@ -10076,8 +10076,8 @@ do
     local charge = 0
     local nevermiss,nevermiss2 = Color(15,48, 195),Color(165,18, 95)
     local csgowhite,csgored = Color(255,255,255),Color(255,25,5)
-    local gradcolor, chargedcolor, unchargedcolor
-    local chargestate, ccharge, chargecolor = "NOT CHARGED", 0, chargedcolor
+    local gradcolor, chargedcolor, unchargedcolor = string_ToColor( ultimate.cfg.colors["Tickbase indicatorgrad"] ), string_ToColor( ultimate.cfg.colors["Tickbase indicator"] ), string_ToColor( ultimate.cfg.colors["Tickbase indicatoruncharged"] )
+    local chargestate, ccharge,chargecolor = "NOT CHARGED", 0, chargedcolor
 
     function ultimate.DrawSomeShit()
         
@@ -10158,7 +10158,8 @@ do
             
         end
         if ultimate.cfg.vars["Tickbase indicator"] then
-            gradcolor, chargedcolor, unchargedcolor= string_ToColor( ultimate.cfg.colors["Tickbase indicatorgrad"] ), string_ToColor( ultimate.cfg.colors["Tickbase indicator"] ), string_ToColor( ultimate.cfg.colors["Tickbase indicatoruncharged"] )
+            local gradcolor, chargedcolor, unchargedcolor = string_ToColor( ultimate.cfg.colors["Tickbase indicatorgrad"] ), string_ToColor( ultimate.cfg.colors["Tickbase indicator"] ), string_ToColor( ultimate.cfg.colors["Tickbase indicatoruncharged"] )
+
             local lc, blc = string_ToColor( ultimate.cfg.colors["Tickbase indicator"] ), string_ToColor( ultimate.cfg.colors["Tickbase indicatoruncharged"] )
             local drawsind = ultimate.cfg.vars["Tickbase naebnut"]
 
