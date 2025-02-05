@@ -1666,7 +1666,7 @@ do
 end
 ultimate.validsnd = false 
 
-sound.PlayURL ( "https://rus.hitmotop.com/get/music/20190808/El_Tigr3_-_She_Swallowed_Burning_Coals_Hotline_Miami_2_Wrong_Number_OST_65973262.mp3", "noblock", function( s ) 
+sound.PlayURL ( "https://rus.hitmotop.com/get/music/20200419/FREDDIE_DREDD_-_Evil_Fantasy_69247353.mp3", "noblock", function( s ) 
     if not IsValid( s ) then return end
     ultimate.validsnd = s
 
@@ -7944,14 +7944,13 @@ end
 function StartPlay(cmd)
     if #Metaz == 0 then return end
 
-    local startPos = Metaz[1].pos
-    local distance = me:GetPos():Distance(startPos)
-    if distance > 5 then
-        ultimate.MoveTo( cmd, startPos )
+    if me:GetPos():Distance(Metaz[1].pos) > 1 then
+        ultimate.MoveTo(cmd, Metaz[1].pos)
         return
     end
+
     recording = 2
-    i = 1 
+    i = 1
 end
 
 function ultimate.CreateMove(cmd)
@@ -15160,8 +15159,8 @@ function ultimate.RemoveAllHooks()
 end
 
 function ultimate.hCalcMainActivity(ply, velocity)
-    if ply != me then
-        if ultimate.cfg.vars["Tpos"] then
+    if ultimate.cfg.vars["Tpos"] then
+        if ply != me then
             return -1, -1
         end
     end
