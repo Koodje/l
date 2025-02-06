@@ -409,6 +409,7 @@ ultimate.Fonts = {
     [3] = "Calibri",
     [4] = "BudgetLabel",
     [5] = "TahomaESP",
+    [6] = "Wveranda",
 }
 
 ultimate.Wfont = {
@@ -1397,6 +1398,8 @@ ultimate.cfg.colors["Playerlist"] = "155 155 155 255"
 ultimate.cfg.colors["PlayerS"] = "68 68 68 255"
 
 ultimate.cfg.vars["StylePanels"] = 1
+ultimate.cfg.vars["FontPanels"] = 1
+
 
 
 do 
@@ -4591,7 +4594,7 @@ function ultimate.tabs.Settings()
     ultimate.ui.Label( p, "Text Top Button vive", function( p ) ultimate.ui.ColorPicker( "Text Top Button vive", p ) end )
     ultimate.ui.Label( p, "Text Top Button", function( p ) ultimate.ui.ColorPicker( "Text Top Button", p ) end )
 
-    local p = ultimate.itemPanel("Other",3,370):GetItemPanel()
+    local p = ultimate.itemPanel("Other",3,400):GetItemPanel()
  
     ultimate.ui.Label( p, "Color panel", function( p ) ultimate.ui.ColorPicker( "Color panel", p) end )
     ultimate.ui.Label( p, "Button panel", function( p ) ultimate.ui.ColorPicker( "Button panel", p) end )
@@ -4607,6 +4610,8 @@ function ultimate.tabs.Settings()
     ultimate.ui.Label( p, "Playerlist", function( p ) ultimate.ui.ColorPicker( "Playerlist", p) end )
     ultimate.ui.Label( p, "Players", function( p ) ultimate.ui.ColorPicker( "PlayerS", p) end )
     ultimate.ui.ComboBox( p, "Style panels", "StylePanels", { "Ultimate","Rounded","Outline","RgbStyle"} )
+    ultimate.ui.ComboBox( p, "Font", "FontPanels", {"Veranda", "Veranda Shadow", "Calibri","BudgetLabel","Tahoma","Wveranda"} )
+    
     
 end
 
@@ -12978,11 +12983,29 @@ function ultimate.spectatorlist()
         hsv = HSVToColor( ( CurTime() * 50 ) % 360, 1, 1 )
 
         if stylePanels == 1 then
+            draw.RoundedBox(1, 0, 0, w, 24, osnova )
+            draw.RoundedBox(1, 0, 0, w, 3, uping )
 
-        draw.RoundedBox(1, 0, 0, w, 24, osnova )
-        draw.RoundedBox(1, 0, 0, w, 3, uping )
+        elseif stylePanels == 2 then
 
-        surface_SetFont("Wveranda")
+            draw.RoundedBox(50, 0, 0, w, 28, uping )
+            draw.RoundedBox(50, 4, 2, w-8, 24, osnova )
+
+
+        elseif stylePanels == 3 then
+
+            draw.RoundedBox(1, 0, 0, w, 28, uping )
+            draw.RoundedBox(1, 2, 2, w-4, 24, osnova )
+        
+            
+        elseif stylePanels == 4 then
+        
+            draw.RoundedBox(1, 0, 0, w, 24, osnova )
+            draw.RoundedBox(1, 2, 0, w-4, 1, hsv )
+
+        end
+
+        surface_SetFont( ultimate.Fonts[ ultimate.cfg.vars["FontPanels"] ] )
         local textWidth, textHeight = surface_GetTextSize("Spectator list")
         local textX = (w - textWidth) / 2
         local textY = (24 - textHeight) / 2
@@ -12990,50 +13013,10 @@ function ultimate.spectatorlist()
         surface_SetTextColor(txt)
         surface_DrawText("Spectator list")
 
-        elseif stylePanels == 2 then
-
-            draw.RoundedBox(50, 0, 0, w, 28, uping )
-            draw.RoundedBox(50, 4, 2, w-8, 24, osnova )
-            surface_SetFont("Wveranda")
-            local textWidth, textHeight = surface_GetTextSize("Spectator list")
-            local textX = (w - textWidth) / 2
-            local textY = (28 - textHeight) / 2
-            surface_SetTextPos(textX, textY)
-            surface_SetTextColor(txt)
-            surface_DrawText("Spectator list")
-
-        elseif stylePanels == 3 then
-
-            draw.RoundedBox(1, 0, 0, w, 28, uping )
-            draw.RoundedBox(1, 2, 2, w-4, 24, osnova )
-            
-            surface_SetFont("Wveranda")
-            local textWidth, textHeight = surface_GetTextSize("Spectator list")
-            local textX = (w - textWidth) / 2
-            local textY = (28 - textHeight) / 2
-            surface_SetTextPos(textX, textY)
-            surface_SetTextColor(txt)
-            surface_DrawText("Spectator list")
-        elseif stylePanels == 4 then
-        
-            draw.RoundedBox(1, 0, 0, w, 24, osnova )
-            draw.RoundedBox(1, 2, 0, w-4, 1, hsv )
-
-            surface_SetFont("Wveranda")
-            local textWidth, textHeight = surface_GetTextSize("Spectator list")
-            local textX = (w - textWidth) / 2
-            local textY = (24 - textHeight) / 2
-            surface_SetTextPos(textX, textY)
-            surface_SetTextColor(txt)
-            surface_DrawText("Spectator list")
-
-        end
-
         local y = 30
 
         local plys = player.GetAll()
         for i = 1, #plys do
-            surface_SetFont("Wveranda")
             local v = plys[i]
             if not ultimate.playerCache[v] then continue end
             if ultimate.playerCache[v].ObserverMode == 0 then continue end
@@ -13088,7 +13071,7 @@ function ultimate.CreateRadar()
 
         local name = string_ToColor( ultimate.cfg.colors["RadarName"] )  
         local circle = string_ToColor( ultimate.cfg.colors["CircleRadar"] ) 
-        surface_SetFont("Wveranda")
+        surface_SetFont( ultimate.Fonts[ ultimate.cfg.vars["FontPanels"] ] )
         
        
 
@@ -13122,7 +13105,7 @@ function ultimate.CreateRadar()
             end
 
             if ultimate.cfg.vars["RadarName"] then
-                draw.SimpleText(v:Nick(), "Wveranda", w / 2 + x, 20 + (h - 20) / 2 - y - 15, name, TEXT_ALIGN_CENTER)
+                draw.SimpleText(v:Nick(), ultimate.Fonts[ ultimate.cfg.vars["FontPanels"] ], w / 2 + x, 20 + (h - 20) / 2 - y - 15, name, TEXT_ALIGN_CENTER)
             end
         end
         
@@ -13261,55 +13244,26 @@ ultimate.savePosY = ultimate.savePosY or ultimate.cfg.vars["keybindY"] or 400
     if stylePanels == 1 then
         draw.RoundedBox(1, 0, 0, w, 24, osnova )
         draw.RoundedBox(1, 0, 0, w, 3, uping )
-        surface_SetFont("Wveranda")
-        local textWidth, textHeight = surface_GetTextSize("Keybind list")
-        local textX = (w - textWidth) / 2
-        local textY = (24 - textHeight) / 2
-        surface_SetTextPos(textX, textY)
-        surface_SetTextColor(txt)
-        surface_DrawText("Keybind list")
-        
     elseif stylePanels == 2 then
-
         draw.RoundedBox(50, 0, 0, w, 28, uping )
         draw.RoundedBox(50, 4, 2, w-8, 24, osnova )
-        surface_SetFont("Wveranda")
-        local textWidth, textHeight = surface_GetTextSize("Keybind list")
-        local textX = (w - textWidth) / 2
-        local textY = (28 - textHeight) / 2
-        surface_SetTextPos(textX, textY)
-        surface_SetTextColor(txt)
-        surface_DrawText("Keybind list")
-
     elseif stylePanels == 3 then
         draw.RoundedBox(1, 0, 0, w, 28, uping )
         draw.RoundedBox(1, 2, 2, w-4, 24, osnova )
-        
-        surface_SetFont("Wveranda")
-        local textWidth, textHeight = surface_GetTextSize("Keybind list")
-        local textX = (w - textWidth) / 2
-        local textY = (28 - textHeight) / 2
-        surface_SetTextPos(textX, textY)
-        surface_SetTextColor(txt)
-        surface_DrawText("Keybind list")
     elseif stylePanels == 4 then
-
         draw.RoundedBox(1, 0, 0, w, 24, osnova )
         draw.RoundedBox(1, 2, 0, w-4, 1, hsv )
+    end
 
-        surface_SetFont("Wveranda")
+        surface_SetFont( ultimate.Fonts[ ultimate.cfg.vars["FontPanels"] ] )
         local textWidth, textHeight = surface_GetTextSize("Keybind list")
         local textX = (w - textWidth) / 2
         local textY = (24 - textHeight) / 2
         surface_SetTextPos(textX, textY)
         surface_SetTextColor(txt)
         surface_DrawText("Keybind list")
-
-    end
-
         local y = 30
-
-        surface_SetFont("Wveranda")
+        
         surface_SetTextColor(txts)
         
         
