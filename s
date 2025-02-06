@@ -11185,8 +11185,7 @@ ultimate.bone = {
     [3] = "ValveBiped.Bip01_Pelvis",
 }
 
-ultimate.killka = false
-ultimate.hitka  = false
+ultimate.screnhit  = false
 gameevent.Listen( "player_hurt" )
 ultimate.hitboxes = {}
 
@@ -11212,7 +11211,7 @@ function ultimate.player_hurt(data)
 
 	if attackerid == me:UserID() then
 
-        ultimate.hitka = true
+        ultimate.screnhit = true
 
         if ultimate.cfg.vars["Loger"] then        
             if ultimate.cfg.vars[ "LogerHit" ] then                    
@@ -12321,8 +12320,6 @@ function ultimate.entity_killed(data)
                 chat.AddText(Color(255, 0, 0), "[" .. ultimate.cfg.vars["Custom Cheat"] .. "] ", color_white, "Kill " .. vid:Nick())                 
             end
         end
-        
-        ultimate.killka = true
         
         if ultimate.cfg.vars["Killsound"] then
             surface_PlaySound( ultimate.cfg.vars["Killsound str"] )
@@ -15015,16 +15012,18 @@ GAMEMODE["EntityFireBullets"] = function( self, p, data )
 
     
 
-        if ultimate.cfg.vars["Extrapolation"] and not ultimate.killka or ultimate.hitkathen then
-            reason = 6
-        elseif ultimate.cfg.vars["LBYResolver"] or ultimate.cfg.vars["StandartResolver"] and not ultimate.killka or ultimate.hitkathen then 
-            reason = 5
-        elseif ultimate.target.break_lc then
-            reason = 4
-        elseif ded.GetLatency( 0 ) > 0.2 then
-            reason = 3
-        elseif tr.StartSolid or tr.Hit and tr.Entity != ultimate.target then
-            reason = 2
+        if not ultimate.screnhit then
+            if ultimate.cfg.vars["Extrapolation"] and then
+                reason = 6
+            elseif ultimate.cfg.vars["LBYResolver"] or ultimate.cfg.vars["StandartResolver"] and then 
+                reason = 5
+            elseif ultimate.target.break_lc then
+                reason = 4
+            elseif ded.GetLatency( 0 ) > 0.2 then
+                reason = 3
+            elseif tr.StartSolid or tr.Hit and tr.Entity != ultimate.target then
+                reason = 2
+            end
         end
         
         local hlcolor = string_ToColor( ultimate.cfg.colors[ ultimate.MissReasons[ reason ].var ] )
