@@ -15013,9 +15013,9 @@ GAMEMODE["EntityFireBullets"] = function( self, p, data )
     
 
         if not ultimate.screnhit then
-            if ultimate.cfg.vars["Extrapolation"] and then
+            if ultimate.cfg.vars["Extrapolation"] then
                 reason = 6
-            elseif ultimate.cfg.vars["LBYResolver"] or ultimate.cfg.vars["StandartResolver"] and then 
+            elseif ultimate.cfg.vars["LBYResolver"] or ultimate.cfg.vars["StandartResolver"] then 
                 reason = 5
             elseif ultimate.target.break_lc then
                 reason = 4
