@@ -10393,13 +10393,7 @@ do
 
         if ultimate.cfg.vars[ "On screen logs" ] and table.Count( ultimate.onScreenLogs ) > 0 then
             local tick = engine.TickCount()
-            local x, y
-            if ultimate.cfg.vars[ "On screen logs pos" ] == 1 then
-                x, y = scrw / 2, scrh / 2 + 45 
-            elseif ultimate.cfg.vars[ "On screen logs pos" ] == 2 then
-                x, y = 25, 25
-            elseif ultimate.cfg.vars[ "On screen logs pos" ] == 3 then
-            end
+            local x, y = scrw / 2, scrh / 2 + 45 
     
             for k, v in pairs( ultimate.onScreenLogs ) do
 
@@ -10430,13 +10424,7 @@ do
                     x = x + tw
                 end
     
-                if ultimate.cfg.vars[ "On screen logs pos" ] == 1 then
-                    x, y = scrw / 2, y + th
-                elseif ultimate.cfg.vars[ "On screen logs pos" ] == 2 then
-                    x, y = 25, y + th
-                elseif ultimate.cfg.vars[ "On screen logs pos" ] == 3 then
-                end
-               
+                x, y = scrw / 2, y + th
             end
         end
 
@@ -11211,7 +11199,7 @@ function ultimate.player_hurt(data)
         if ultimate.cfg.vars["Loger"] then 
             if ultimate.cfg.vars[ "LogerHit" ] then        
                 if IsValid(attackers) then     
-                    chat.AddText(Color(255, 0, 0), "[" .. ultimate.cfg.vars["Custom Cheat"] .. "] ", color_white, attackers:Nick() .. " ранил тебя!")     
+                    chat.AddText(Color(255, 0, 0), "[" .. ultimate.cfg.vars["Custom Cheat"] .. "] ", color_white, attackers:Name() .. " Hit you!")     
                 end           
             end
         end
@@ -11223,7 +11211,7 @@ function ultimate.player_hurt(data)
 
         if ultimate.cfg.vars["Loger"] then        
             if ultimate.cfg.vars[ "LogerHit" ] then                    
-                chat.AddText(Color(255, 0, 0), "[" .. ultimate.cfg.vars["Custom Cheat"] .. "] ", color_white, "Ты попал по " .. hurted:Nick() ..  " на " ..  hurted:Health() - health .. " урона!")           
+                chat.AddText(Color(255, 0, 0), "[" .. ultimate.cfg.vars["Custom Cheat"] .. "] ", color_white, "Hit " .. hurted:Name() ..  " at " ..  hurted:Health() - health .. " damage!")           
             end
         end
 
@@ -12300,7 +12288,7 @@ function ultimate.entity_killed(data)
         if ultimate.cfg.vars["Loger"] then        
             if ultimate.cfg.vars[ "LogerKill" ] then     
                 if IsValid(aid) then        
-                    chat.AddText(Color(255, 0, 0), "[" .. ultimate.cfg.vars["Custom Cheat"] .. "] ", color_white, aid:Name() .. " убил тебя!")    
+                    chat.AddText(Color(255, 0, 0), "[" .. ultimate.cfg.vars["Custom Cheat"] .. "] ", color_white, aid:Name() .. " kill you!")    
                 end       
             end
         end
@@ -12325,7 +12313,7 @@ function ultimate.entity_killed(data)
 
         if ultimate.cfg.vars["Loger"] then        
             if ultimate.cfg.vars[ "LogerKill" ] then                    
-                chat.AddText(Color(255, 0, 0), "[" .. ultimate.cfg.vars["Custom Cheat"] .. "] ", color_white, "Ты убил " .. vid:Nick())                 
+                chat.AddText(Color(255, 0, 0), "[" .. ultimate.cfg.vars["Custom Cheat"] .. "] ", color_white, "Kill " .. vid:Nick())                 
             end
         end
         
