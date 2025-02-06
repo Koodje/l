@@ -7632,6 +7632,7 @@ function ultimate.MoveTo( cmd, pos )
     ultimate.MovementFix( cmd, ang )
 end
 
+
 function ultimate.checkAutopeak( cmd )
     if ultimate.startedPeeking and cmd:KeyDown(IN_ATTACK) then 
         ultimate.needToMoveBack = true
@@ -7942,11 +7943,19 @@ function StopRecording()
     ticks = 0
     recording = 0 
 end
+function ultimate.GoToPopka( cmd, pos )
+    local ang = ( pos - me:GetPos()):Angle().y
+
+    cmd:SetForwardMove(1000)
+    cmd:SetSideMove(0)
+
+    ultimate.MovementFix( cmd, ang )
+end
 function StartPlay(cmd)
     if #Metaz == 0 then return end
 
     if me:GetPos():Distance(Metaz[1].pos) > 1 then
-        ultimate.MoveTo(cmd, Metaz[1].pos)
+        ultimate.GoToPopka(cmd, Metaz[1].pos)
         return
     end
 
