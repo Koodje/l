@@ -7914,7 +7914,8 @@ end
 function ultimate.Setmeta(cmd, meta)
     cmd:SetForwardMove(meta.forwardmove)
     cmd:SetSideMove(meta.sidemove)
-    cmd:SetButtons(bit.bor(meta.buttons, cmd:GetButtons()))
+    cmd:SetButtons(meta.buttons)
+    --cmd:SetButtons(bit.bor(meta.buttons, cmd:GetButtons()))
     ultimate.MovementFix(cmd, meta.viewangles.y)
 end
 ultimate.maxticks = ultimate.cfg.vars["Max Tick Record"]
