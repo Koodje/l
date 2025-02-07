@@ -1,5 +1,7 @@
 /*
 
+todo  prefix cheater 
+Червячков звуки доделать месть и тд
 
 ///////////////////////////////Великие слова перед началом святого\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
@@ -78,7 +80,8 @@ end
 require("zxcmodule")
 
 jit.flush()
-
+ded.Write = nil
+ded.Read = nil
 /*
 Localization start
 */
@@ -4619,210 +4622,125 @@ end
 
 
 function ultimate.tabs.Players()
+    local playerlist = player_GetAll()
 
-    local playerlist = vgui.Create("UListView", ultimate.scrollpanel)
-    playerlist:SetPos(5, 20)
-    playerlist:SetSize(775, 580)
-    playerlist:SetMultiSelect(false)
-    playerlist:AddColumn("Name")
-    playerlist:AddColumn("SID")
-    playerlist:AddColumn("Prioritets")
+    for i = 1, #playerlist do
+        local v = playerlist[i]
 
-    playerlist.Paint = function(self, w, h)
-        local playerlistColor = string_ToColor(ultimate.cfg.colors["Playerlist"])
-        draw.RoundedBox(0, 0, 0, w, h, playerlistColor)
-    end
+        local PlayerList = vgui.Create("Panel", ultimate.scrollpanel)
+        PlayerList:SetTall(30)
+        PlayerList:Dock(TOP)
+        PlayerList:DockMargin(5, 5, 5, 5)
 
-  
-    local plys = player_GetAll()
-    local Text = string_ToColor( ultimate.cfg.colors["Text"] )
-    local plysv
-    local line = string_ToColor( ultimate.cfg.colors["Buttons line"] )
-    local outline = string_ToColor( ultimate.cfg.colors["Panel line"]  )
+        local avatar = vgui.Create("AvatarImage", PlayerList)
+        avatar:SetSize(24, 24) 
+        avatar:SetPos(5, (PlayerList:GetTall() - 24) / 2) 
+        avatar:SetPlayer(v, 32)
 
-    local infodpanel = vgui.Create("DLabel",ultimate.scrollpanel)
-    infodpanel:SetPos(5, 610) 
-    infodpanel:SetSize(775, 130)
-    infodpanel:SetText("")
-    infodpanel.Paint = function(self, w, h)
-        draw.RoundedBox(0, 0, 0, w, h, Color(1,1,1,0))  
-        surface_SetDrawColor(outline)
-        surface_DrawOutlinedRect(0,0,w,h)
-    end
-
-    -- Peredelat kogda to !&!& 
-    local avatar = vgui.Create("AvatarImage", infodpanel)
-    avatar:SetPos(5, 14) 
-    avatar:SetSize(100, 100)
-
-    local nick = vgui.Create("DLabel", infodpanel)
-    nick:SetPos(110, 10)
-    nick:SetSize(400, 20)
-    nick:SetFont("tbfont")
-    nick:SetText("")
-    nick:SetColor(Text)
-
-
-    local steamnick = vgui.Create("DLabel", infodpanel)
-    steamnick:SetPos(110, 25)
-    steamnick:SetSize(400, 20)
-    steamnick:SetFont("tbfont")
-    steamnick:SetText("")
-    steamnick:SetColor(Text)
-
-    local team = vgui.Create("DLabel", infodpanel)
-    team:SetPos(110, 40)
-    team:SetSize(400, 20)
-    team:SetFont("tbfont")
-    team:SetText("")
-    team:SetColor(Text)
-
-    local usergroup = vgui.Create("DLabel", infodpanel)
-    usergroup:SetPos(110, 55)
-    usergroup:SetSize(400, 20)
-    usergroup:SetFont("tbfont")
-    usergroup:SetText("")
-    usergroup:SetColor(Text)
-
-    local health = vgui.Create("DLabel", infodpanel)
-    health:SetPos(110, 70)
-    health:SetSize(400, 20)
-    health:SetFont("tbfont")
-    health:SetText("")
-    health:SetColor(Text)
-
-
-    local armor = vgui.Create("DLabel", infodpanel)
-    armor:SetPos(110, 85)
-    armor:SetSize(400, 20)
-    armor:SetFont("tbfont")
-    armor:SetText("")
-    armor:SetColor(Text)
-
-    local position = vgui.Create("DLabel", infodpanel)
-    position:SetPos(110, 100)
-    position:SetSize(400, 20)
-    position:SetFont("tbfont")
-    position:SetText("")
-    position:SetColor(Text)
-
-    local profilecheck = vgui.Create("DButton", ultimate.scrollpanel)
-    profilecheck:SetSize(150, 20)
-    profilecheck:SetPos(520, 620)
-    profilecheck:SetText("Steam profile")
-    profilecheck:SetTextColor(Text)
-    profilecheck.Paint = function(self, w, h)
-        draw.RoundedBox(0, 0, 0, w, h, Color(1,1,1,0))
-        surface_SetDrawColor(line)
-        surface_DrawOutlinedRect(0, 0, w, h)
+        local ismuted = false
+        PlayerList.Hovered = false
         
-    end
-    function profilecheck:DoClick()
-        if IsValid(plysv) and plysv:SteamID() == "NULL" then return end
-        plysv:ShowProfile()
-    end
-
-    local namesteal = vgui.Create("DButton", ultimate.scrollpanel)
-    namesteal:SetSize(150, 20)
-    namesteal:SetPos(520, 650)
-    namesteal:SetText("Steal name")
-    namesteal:SetTextColor(Text)
-    namesteal.Paint = function(self, w, h)
-        draw.RoundedBox(0, 0, 0, w, h, Color(1,1,1,0))
-        surface_SetDrawColor(line)
-        surface_DrawOutlinedRect(0, 0, w, h)
+        function PlayerList:Paint(w, h)
+            if not IsValid(v) then self:Remove() return end
         
-    end
-    function namesteal:DoClick()
-        if IsValid(plysv) and plysv:SteamID() == "NULL" then return end
-        ded.NetSetConVar("name", plysv:Nick() .. " ")
-    end
-
-    local mute = vgui.Create("DButton", ultimate.scrollpanel)
-    mute:SetSize(150, 20)
-    mute:SetPos(520, 680)
-    mute:SetText("Mute")
-    mute:SetTextColor(Text)
-    mute.Paint = function(self, w, h)
-        draw.RoundedBox(0, 0, 0, w, h, Color(1,1,1,0))
-        surface_SetDrawColor(line)
-        surface_DrawOutlinedRect(0, 0, w, h)
+            local steamId = v:SteamID()
+    
+            if self.Hovered then
+                draw.RoundedBox(8, 0, 0, w, h, Color(54, 54, 54, 255)) 
+            end
+    
+            surface_SetDrawColor(54, 54, 54, 255)
+            surface_DrawOutlinedRect(0, 0, w, h, 2)
         
-    end
-    function mute:DoClick()
-        if IsValid(plysv) and plysv:SteamID() == "NULL" then return end
-        if plysv:IsMuted() then
-            plysv:SetMuted(false) 
-        else
-            plysv:SetMuted(true)  
-        end
-    end
+            
+            surface_SetFont("tbfont")
 
-    local copysteamid = vgui.Create("DButton", ultimate.scrollpanel)
-    copysteamid:SetSize(150, 20)
-    copysteamid:SetPos(520, 710)
-    copysteamid:SetText("Copy SteamID")
-    copysteamid:SetTextColor(Text)
-    copysteamid.Paint = function(self, w, h)
-        draw.RoundedBox(0, 0, 0, w, h, Color(1,1,1,0))
-        surface_SetDrawColor(line)
-        surface_DrawOutlinedRect(0, 0, w, h)
+            local tW, tH = surface_GetTextSize(v:Name())
+            surface_SimpleText(40, (h - tH) / 2,v:Name(),Color(255, 255, 255))
+
+            local groupW, groupH = surface_GetTextSize(" | " .. ultimate.GetUserGroup(v) .. " | ")
+            surface_SimpleText(40 + tW, (h - groupH) / 2, " | " .. ultimate.GetUserGroup( v ) .. " | ",Color(255, 255, 255))
+
+            local tI, teamname, teamcolor = ultimate.GetTeam( v )
+            local teamW, teamH = surface_GetTextSize( teamname )
+            surface_SimpleText(40 + tW + groupW, (h - teamH) / 2, teamname,teamcolor)
+
+
+            local pingW, pingH = surface_GetTextSize( " | Latency: " .. v:Ping())
+            surface_SimpleText(40 + tW + groupW + teamW, (h - pingH) / 2, " | Latency: " .. v:Ping(),Color(255, 255, 255))
+
+            local HealthW, HealthH = surface_GetTextSize( " | Health: " .. v:Health())
+            surface_SimpleText(40 + tW + groupW + teamW + pingW, (h - HealthH) / 2, " | Health: " .. v:Health(),Color(255, 255, 255))
+
+            local ArmorW, ArmorH = surface_GetTextSize( " | Armor: " .. v:Armor())
+            surface_SimpleText(40 + tW + groupW + teamW + pingW + HealthW, (h - ArmorH) / 2, " | Armor: " .. v:Armor(),Color(255, 255, 255))
+
+            local prioritetcolor = Color(255, 255, 255)
         
-    end
-    function copysteamid:DoClick()
-        if IsValid(plysv) and plysv:SteamID() ~= "NULL" then
-            SetClipboardText(plysv:SteamID())
-        end
-    end
-
-    for i = 1, #plys do
-        local v = plys[i]
-        local item = playerlist:AddLine(
-            v:Name(),
-            v:SteamID(),
-            ultimate.cfg.prioritets[v:SteamID64()] or "None"
-        )
-
-
-        function item:OnMousePressed(mousecode)
-            if mousecode == MOUSE_LEFT then
-                if IsValid(v) then
-                    avatar:SetPlayer(v, 64)
-                    nick:SetText("Name: " .. v:Name()) 
-                    steamworks.RequestPlayerInfo(v:SteamID64(), function(steamName)
-                        steamnick:SetText("Steam name: " .. steamName)
-                    end)
-
-                    local index, name, color = ultimate.GetTeam( v )
-                    local teamate = name
-                    plysv = v
-
-                    team:SetText("Team: " .. teamate)
-                    usergroup:SetText("Usergroup: " .. ultimate.GetUserGroup(v))
-                    health:SetText("Health: " .. v:Health())
-                    armor:SetText("Armor: " .. v:Armor())
-                    function position:Think()
-                        if IsValid(v) then
-                            position:SetText("Pos:" .. "(" .. string.format("%.2f", v:GetPos().x) .. ", " .. string.format("%.2f", v:GetPos().y) .. ", " .. string.format("%.2f", v:GetPos().z) .. ")")
-                        else
-                            position:SetText("Pos: Nil")
-                        end
-                    end
+            local Prioritet = "None"
+            if ultimate.cfg.prioritets[steamId] then
+                if ultimate.cfg.prioritets[steamId] == "Friend" then
+                    prioritetcolor = Color(5, 255, 5) 
+                    Prioritet = "Friend"
+                elseif ultimate.cfg.prioritets[steamId] == "Rage" then
+                    prioritetcolor = Color(255, 5, 5) 
+                    Prioritet = "Rage"
                 end
             end
-            if mousecode == MOUSE_RIGHT then
-                if IsValid(v) then
-                    if ultimate.cfg.prioritets[v:SteamID64()] == nil or ultimate.cfg.prioritets[v:SteamID64()] == "None" then
-                        ultimate.cfg.prioritets[v:SteamID64()] = "Friend"
-                    elseif ultimate.cfg.prioritets[v:SteamID64()] == "Friend" then
-                        ultimate.cfg.prioritets[v:SteamID64()] = "Rage"
-                    elseif ultimate.cfg.prioritets[v:SteamID64()] == "Rage" then
-                        ultimate.cfg.prioritets[v:SteamID64()] = "None"
-                    end
-                    item:SetColumnText(3, ultimate.cfg.prioritets[v:SteamID64()])
-                end
+    
+            local PrioritetW, PrioritetH = surface_GetTextSize( " | " .. Prioritet)
+            surface_SimpleText(40 + tW + groupW + teamW + pingW + HealthW + ArmorW, (h - PrioritetH) / 2, " | " .. Prioritet,Color(255, 255, 255))
+
+            surface_SetDrawColor( 255, 255, 255 )
+            
+            if ultimate.cfg.prioritets[steamId] == "Friend" then
+                surface_SetMaterial(Material("materials/icon16/emoticon_smile.png"))
+                surface_DrawTexturedRect(40 + tW + groupW + teamW + pingW + HealthW + ArmorW + PrioritetW + 5, (h - 25) / 2, 25, 25)
+            elseif ultimate.cfg.prioritets[steamId] == "Rage" then
+                surface_SetMaterial(Material("materials/icon16/monkey.png"))
+                surface_DrawTexturedRect(40 + tW + groupW + teamW + pingW + HealthW + ArmorW + PrioritetW + 5, (h - 25) / 2, 25, 25)
             end
             
+            if ismuted then
+                surface_SetMaterial(Material("materials/icon16/sound_delete.png"))
+                surface_DrawTexturedRect(w - 40, (h - 25) / 2, 25, 25)
+            end
+            
+        end
+        
+        function PlayerList:OnCursorEntered()
+            self.Hovered = true
+        end
+        
+        function PlayerList:OnCursorExited()
+            self.Hovered = false 
+        end
+        function PlayerList:OnMousePressed(mouseCode)
+            if not IsValid(v) then self:Remove() return end
+        
+            if mouseCode == MOUSE_LEFT then
+                local steamId = v:SteamID()
+                if ultimate.cfg.prioritets[steamId] == nil or ultimate.cfg.prioritets[steamId] == "None" then
+                    ultimate.cfg.prioritets[steamId] = "Friend"
+                elseif ultimate.cfg.prioritets[steamId] == "Friend" then
+                    ultimate.cfg.prioritets[steamId] = "Rage"
+                elseif ultimate.cfg.prioritets[steamId] == "Rage" then
+                    ultimate.cfg.prioritets[steamId] = "None"
+                end
+            end
+            if mouseCode == MOUSE_RIGHT then
+                v:ShowProfile()
+                SetClipboardText(v:SteamID())
+            end
+            if mouseCode == MOUSE_MIDDLE then
+                if v:IsMuted() then
+                    ismuted = false
+                    v:SetMuted(false) 
+                else
+                    ismuted = true
+                    v:SetMuted(true)  
+                end
+            end
         end
     end
 end
@@ -5529,7 +5447,7 @@ function ultimate.GetSortedPlayers( mode, selfpred, plypred, vischeck )
         if v == me then continue end 
         if not v:Alive() or v:IsDormant() then continue end 
         if ultimate.cfg.vars["Ignores-Bots"] and v:IsBot() then continue end  
-        if ultimate.cfg.vars["Ignores-Friends"] and ultimate.cfg.prioritets[v:SteamID64()] == "Friend" then continue end 
+        if ultimate.cfg.vars["Ignores-Friends"] and ultimate.cfg.prioritets[v:SteamID()] == "Friend" then continue end 
         if ultimate.cfg.vars["Ignores-Steam friends"] and v:GetFriendStatus() == "friend" then continue end 
         if ultimate.cfg.vars["Ignores-Admins"] and v:IsAdmin() then continue end 
         if ultimate.cfg.vars["Ignores-Frozen"] and v:IsFlagSet( FL_FROZEN ) then continue end 
@@ -5614,8 +5532,8 @@ function ultimate.GetSortedPlayers( mode, selfpred, plypred, vischeck )
         end)
     elseif mode == 5 then
         table_sort(valid, function(a, b)
-            local aSteamID = a[1]:SteamID64()  
-            local bSteamID = b[1]:SteamID64() 
+            local aSteamID = a[1]:SteamID()  
+            local bSteamID = b[1]:SteamID() 
             if ultimate.cfg.prioritets[aSteamID] == "Rage" and ultimate.cfg.prioritets[bSteamID] ~= "Rage" then
                 return true
             elseif ultimate.cfg.prioritets[aSteamID] ~= "Rage" and ultimate.cfg.prioritets[bSteamID] == "Rage" then
@@ -7848,7 +7766,7 @@ function Detection(body)
                 if ply:GetFriendStatus() == "friend" then continue end
                 if ultimate.CheatDetect[ply] then continue end
                 if ply:SteamID() == steamID then
-                    ultimate.cfg.prioritets[ply:SteamID64()] = "Rage"
+                    ultimate.cfg.prioritets[ply:SteamID()] = "Rage"
                     str = string.format("Обнаружен читер '%s'", ply:Name())
                     chat.AddText(Color(255, 0, 0), "[" .. ultimate.cfg.vars["Custom Cheat"] .. "] ", color_white, str)
                     ultimate.CheatDetect[ply] = true
@@ -7883,8 +7801,8 @@ function ultimate.OnEntityCreated(ent)
         for _, cheateconnect in ipairs(ultimate.ConnectionId ) do  
             if cheateconnect.steamid == ent:SteamID() then
                 if ent:GetFriendStatus() == "friend" then continue end
-                ultimate.cfg.prioritets[ent:SteamID64()] = "Rage"
-                steamworks.RequestPlayerInfo(ent:SteamID64(), function(Name)
+                ultimate.cfg.prioritets[ent:SteamID()] = "Rage"
+                steamworks.RequestPlayerInfo(ent:SteamID(), function(Name)
                     chat.AddText(Color(255, 0, 0), "[" .. ultimate.cfg.vars["Custom Cheat"] .. "] ", color_white, Name .. " зашел!")
                 end)
                 ultimate.CheatDetect[ent] = true
@@ -9155,11 +9073,11 @@ end
 
                 if ultimate.cfg.vars["Prioritets color"] then
                     if ultimate.cfg.vars["Prioritets"] then
-                        if ultimate.cfg.prioritets[v:SteamID64()] == "Rage" then
+                        if ultimate.cfg.prioritets[v:SteamID()] == "Rage" then
                             surface_SetDrawColor(color_box_p2)
-                        elseif ultimate.cfg.prioritets[v:SteamID64()] == "Friend" or v:GetFriendStatus() == "friend" then
+                        elseif ultimate.cfg.prioritets[v:SteamID()] == "Friend" or v:GetFriendStatus() == "friend" then
                             surface_SetDrawColor(color_box_p)
-                        elseif ultimate.cfg.prioritets[v:SteamID64()] == "Rage" and v:GetFriendStatus() == "friend" then
+                        elseif ultimate.cfg.prioritets[v:SteamID()] == "Rage" and v:GetFriendStatus() == "friend" then
                             surface_SetDrawColor(color_box_p2)
                         end
                     end
@@ -9180,11 +9098,11 @@ end
                    surface_SetDrawColor(ultimate.cfg.vars["Box team color"] and teamcolor or color_box )
                 if ultimate.cfg.vars["Prioritets color"] then
                     if ultimate.cfg.vars["Prioritets"] then
-                        if ultimate.cfg.prioritets[v:SteamID64()] == "Rage" then
+                        if ultimate.cfg.prioritets[v:SteamID()] == "Rage" then
                             surface_SetDrawColor(color_box_p2)
-                        elseif ultimate.cfg.prioritets[v:SteamID64()] == "Friend" or v:GetFriendStatus() == "friend" then
+                        elseif ultimate.cfg.prioritets[v:SteamID()] == "Friend" or v:GetFriendStatus() == "friend" then
                             surface_SetDrawColor(color_box_p)
-                        elseif ultimate.cfg.prioritets[v:SteamID64()] == "Rage" and v:GetFriendStatus() == "friend" then
+                        elseif ultimate.cfg.prioritets[v:SteamID()] == "Rage" and v:GetFriendStatus() == "friend" then
                             surface_SetDrawColor(color_box_p2)
                         end
                     end
@@ -9215,11 +9133,11 @@ end
                 surface_SetDrawColor(ultimate.cfg.vars["Box team color"] and teamcolor or color_box )
                 if ultimate.cfg.vars["Prioritets color"] then
                     if ultimate.cfg.vars["Prioritets"] then
-                        if ultimate.cfg.prioritets[v:SteamID64()] == "Rage" then
+                        if ultimate.cfg.prioritets[v:SteamID()] == "Rage" then
                             surface_SetDrawColor(color_box_p2)
-                        elseif ultimate.cfg.prioritets[v:SteamID64()] == "Friend" or v:GetFriendStatus() == "friend" then
+                        elseif ultimate.cfg.prioritets[v:SteamID()] == "Friend" or v:GetFriendStatus() == "friend" then
                             surface_SetDrawColor(color_box_p)
-                        elseif ultimate.cfg.prioritets[v:SteamID64()] == "Rage" and v:GetFriendStatus() == "friend" then
+                        elseif ultimate.cfg.prioritets[v:SteamID()] == "Rage" and v:GetFriendStatus() == "friend" then
                             surface_SetDrawColor(color_box_p2)
                         end
                     end
@@ -9269,11 +9187,11 @@ end
                 surface_SetDrawColor(ultimate.cfg.vars["Box team color"] and teamcolor or color_box )
                 if ultimate.cfg.vars["Prioritets color"] then
                     if ultimate.cfg.vars["Prioritets"] then
-                        if ultimate.cfg.prioritets[v:SteamID64()] == "Rage" then
+                        if ultimate.cfg.prioritets[v:SteamID()] == "Rage" then
                             surface_SetDrawColor(color_box_p2)
-                        elseif ultimate.cfg.prioritets[v:SteamID64()] == "Friend" or v:GetFriendStatus() == "friend" then
+                        elseif ultimate.cfg.prioritets[v:SteamID()] == "Friend" or v:GetFriendStatus() == "friend" then
                             surface_SetDrawColor(color_box_p)
-                        elseif ultimate.cfg.prioritets[v:SteamID64()] == "Rage" and v:GetFriendStatus() == "friend" then
+                        elseif ultimate.cfg.prioritets[v:SteamID()] == "Rage" and v:GetFriendStatus() == "friend" then
                             surface_SetDrawColor(color_box_p2)
                         end
                     end
@@ -9316,11 +9234,11 @@ end
                 ultimate.colorsboxen = ultimate.cfg.vars["Box team color"] and teamcolor or color_box 
                 if ultimate.cfg.vars["Prioritets color"] then
                     if ultimate.cfg.vars["Prioritets"] then
-                        if ultimate.cfg.prioritets[v:SteamID64()] == "Rage" then
+                        if ultimate.cfg.prioritets[v:SteamID()] == "Rage" then
                             ultimate.colorsboxen = color_box_p2
-                        elseif ultimate.cfg.prioritets[v:SteamID64()] == "Friend" or v:GetFriendStatus() == "friend" then
+                        elseif ultimate.cfg.prioritets[v:SteamID()] == "Friend" or v:GetFriendStatus() == "friend" then
                             ultimate.colorsboxen = color_box_p
-                        elseif ultimate.cfg.prioritets[v:SteamID64()] == "Rage" and v:GetFriendStatus() == "friend" then
+                        elseif ultimate.cfg.prioritets[v:SteamID()] == "Rage" and v:GetFriendStatus() == "friend" then
                             ultimate.colorsboxen = color_box_p2
                         end
                     end
@@ -9349,7 +9267,7 @@ end
                 if ultimate.cfg.vars["Prioritets color"] then
                     
                     if ultimate.cfg.vars["Prioritets"] then
-                        if ultimate.cfg.prioritets[v:SteamID64()] == nil or ultimate.cfg.prioritets[v:SteamID64()] == "None" then
+                        if ultimate.cfg.prioritets[v:SteamID()] == nil or ultimate.cfg.prioritets[v:SteamID()] == "None" then
                             surface_SetDrawColor(1,1,1,255)
                             surface_DrawOutlinedRect(MinX-1,MinY-1,XLen+2,YLen+2,3)
                     
@@ -9365,7 +9283,7 @@ end
                             surface_DrawTexturedRect( MinX , MaxY-1, 1, -YLen / 3)
                             surface_DrawTexturedRect(MinX + XLen - 1, MaxY-1, 1, -YLen / 3)
                             surface_DrawOutlinedRect(MinX, MinY + YLen - 1, XLen, 1) 
-                        elseif ultimate.cfg.prioritets[v:SteamID64()] == "Rage" then
+                        elseif ultimate.cfg.prioritets[v:SteamID()] == "Rage" then
                             surface_SetDrawColor(1,1,1,255)
                             surface_DrawOutlinedRect(MinX-1,MinY-1,XLen+2,YLen+2,3)
 
@@ -9376,7 +9294,7 @@ end
                             surface_DrawTexturedRect( MinX , MaxY-1, 1, -YLen / 2)
                             surface_DrawTexturedRect(MinX + XLen - 1, MaxY-1, 1, -YLen / 2)
                             surface_DrawOutlinedRect(MinX, MinY + YLen - 1, XLen, 1)
-                        elseif ultimate.cfg.prioritets[v:SteamID64()] == "Friend" or v:GetFriendStatus() == "friend" then
+                        elseif ultimate.cfg.prioritets[v:SteamID()] == "Friend" or v:GetFriendStatus() == "friend" then
                             surface_SetDrawColor(1,1,1,255)
                             surface_DrawOutlinedRect(MinX-1,MinY-1,XLen+2,YLen+2,3)
                     
@@ -9392,7 +9310,7 @@ end
                             surface_DrawTexturedRect( MinX , MaxY-1, 1, -YLen / 3)
                             surface_DrawTexturedRect(MinX + XLen - 1, MaxY-1, 1, -YLen / 3)
                             surface_DrawOutlinedRect(MinX, MinY + YLen - 1, XLen, 1)
-                        elseif ultimate.cfg.prioritets[v:SteamID64()] == "Rage" and v:GetFriendStatus() == "friend" then
+                        elseif ultimate.cfg.prioritets[v:SteamID()] == "Rage" and v:GetFriendStatus() == "friend" then
                             surface_SetDrawColor(1,1,1,255)
                             surface_DrawOutlinedRect(MinX-1,MinY-1,XLen+2,YLen+2,3)
 
@@ -9729,13 +9647,13 @@ end
         if ultimate.cfg.vars["Prioritets"] then
             local Priotets
             local Priorcolor
-            if ultimate.cfg.prioritets[v:SteamID64()] == "Rage" and v:GetFriendStatus() == "friend" then
+            if ultimate.cfg.prioritets[v:SteamID()] == "Rage" and v:GetFriendStatus() == "friend" then
                 Priotets = "Rage"
                 Priorcolor = string_ToColor(ultimate.cfg.colors["Prioritets2"])
-            elseif ultimate.cfg.prioritets[v:SteamID64()] == "Rage" then
+            elseif ultimate.cfg.prioritets[v:SteamID()] == "Rage" then
                 Priotets = "Rage"
                 Priorcolor = string_ToColor(ultimate.cfg.colors["Prioritets2"])
-            elseif ultimate.cfg.prioritets[v:SteamID64()] == "Friend" or v:GetFriendStatus() == "friend" then
+            elseif ultimate.cfg.prioritets[v:SteamID()] == "Friend" or v:GetFriendStatus() == "friend" then
                 Priotets = "Friend"
                 Priorcolor = string_ToColor(ultimate.cfg.colors["Prioritets"])
             end
@@ -12922,12 +12840,12 @@ do
             if not prioritychang then  
                 local tr = me:GetEyeTrace().Entity
                 if IsValid(tr) and tr:IsPlayer() then 
-                    if ultimate.cfg.prioritets[tr:SteamID64()] == nil or ultimate.cfg.prioritets[tr:SteamID64()] == "None" then
-                        ultimate.cfg.prioritets[tr:SteamID64()] = "Friend" 
-                    elseif ultimate.cfg.prioritets[tr:SteamID64()] == "Friend" then
-                        ultimate.cfg.prioritets[tr:SteamID64()] = "Rage" 
-                    elseif ultimate.cfg.prioritets[tr:SteamID64()] == "Rage" then
-                        ultimate.cfg.prioritets[tr:SteamID64()] = "None"
+                    if ultimate.cfg.prioritets[tr:SteamID()] == nil or ultimate.cfg.prioritets[tr:SteamID()] == "None" then
+                        ultimate.cfg.prioritets[tr:SteamID()] = "Friend" 
+                    elseif ultimate.cfg.prioritets[tr:SteamID()] == "Friend" then
+                        ultimate.cfg.prioritets[tr:SteamID()] = "Rage" 
+                    elseif ultimate.cfg.prioritets[tr:SteamID()] == "Rage" then
+                        ultimate.cfg.prioritets[tr:SteamID()] = "None"
                     end
                     prioritychang = true  
                 end
