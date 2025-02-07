@@ -1263,6 +1263,8 @@ ultimate.cfg.vars["Killsound"] = false
 ultimate.cfg.vars["Hitsound str"] = "phx/hmetal1.wav"
 ultimate.cfg.vars["Killsound str"] = "ambient/levels/canals/windchime2.wav"
 
+ultimate.cfg.vars["WA"] = false
+
 // Loger
 
 ultimate.cfg.vars[ "Loger" ] = false
@@ -4454,12 +4456,12 @@ function ultimate.tabs.Misc()
     ultimate.ui.CheckBox( p, "Auto responder", "AutoResponder" )
     ultimate.ui.ComboBox( p, "Group", "Chat group", { "None", "/OOC", "Advert", "Me", "Pm" })
 
-    local p = ultimate.itemPanel( "Markers", 2, 180 ):GetItemPanel()
+    local p = ultimate.itemPanel( "Markers", 2, 200 ):GetItemPanel()
     ultimate.ui.CheckBox( p, "Hitsound", "Hitsound" )
     ultimate.ui.TextEntry( "Sound path", "Hitsound str", p, 420 )
     ultimate.ui.CheckBox( p, "Killsound", "Killsound" )
     ultimate.ui.TextEntry( "Sound path", "Killsound str", p, 420 )
-
+    ultimate.ui.CheckBox( p, "Worms Armageddon sounds", "WA" )
 
     local p = ultimate.itemPanel("Loger",2,100):GetItemPanel()
     
@@ -10096,6 +10098,7 @@ do
 
     function ultimate.DrawSomeShit()
         
+        
         if ultimate.cfg.vars["info"] then
 
             local Color, Color2 = string_ToColor( ultimate.cfg.colors["info"] ), string_ToColor( ultimate.cfg.colors["info2"] )
@@ -11188,6 +11191,13 @@ ultimate.bone = {
 ultimate.screnhit  = false
 gameevent.Listen( "player_hurt" )
 ultimate.hitboxes = {}
+ultimate.hitAWsound = {
+    [1] = {
+        "OHHH.mp3",
+        "ybegai.mp3",
+        "Ne_poidet.mp3",
+    }
+}
 
 function ultimate.player_hurt(data)
 
@@ -11199,7 +11209,9 @@ function ultimate.player_hurt(data)
     local attackers = Player(data.attacker) 
 
     if hurted == me then
-
+        if ultimate.cfg.vars["WA"] then
+            surface_PlaySound(ultimate.hitAWsound[1][math.random(#ultimate.hitAWsound[1])])
+        end
         if ultimate.cfg.vars["Loger"] then 
             if ultimate.cfg.vars[ "LogerHit" ] then        
                 if IsValid(attackers) then     
@@ -12283,12 +12295,63 @@ gameevent.Listen( "player_activate" )
 gameevent.Listen( "entity_killed" )
 
 
+ultimate.killstreak = 0
+
+
+ultimate.killstreakSound = {
+    [1] = {
+        "FirstBlood.mp3",
+        "Kill.mp3",
+    },
+    [2] = {
+        "Bezyprechno.mp3",
+        "Bezyprechno2.mp3",
+        "kamikadze.mp3",
+    },
+    [3] = {
+        "Cheknyti.mp3",
+        "otlichno.mp3",
+        "hehehe.mp3"
+    },
+    [4] = {
+        "ZmeyGorinich.mp3",
+        "Velikolebno.mp3",
+    },
+    [5] = {
+        "ilymitelno.mp3",
+    },
+}
+ultimate.DeathAWsound = {
+    [1] = {
+        "AH.mp3",
+        "glupa.mp3",
+        "kagogo.mp3",
+        "Ne_poidet.mp3",
+        "nydavaidavai.mp3",
+        "nypogodi.mp3",
+        "oibolno.mp3",
+        "oioioi.mp3",
+        "oioioi2.mp3",
+        "ostavmenya.mp3",
+        "tiobetomposjalesh.mp3",
+        "tipodojdi.mp3",
+        "predatel.mp3",
+        "bIX.mp3",
+        "Trys.mp3",
+    }
+}
+
 function ultimate.entity_killed(data)
 	local aid = Entity(data.entindex_attacker)	
 	local vid = Entity(data.entindex_killed)
 
     if vid == me then
-        
+
+        if ultimate.cfg.vars["WA"] then
+            ultimate.killstreak = 0
+            surface_PlaySound(ultimate.DeathAWsound[1][math.random(#ultimate.DeathAWsound[1])])
+        end
+
         if ultimate.cfg.vars["Loger"] then        
             if ultimate.cfg.vars[ "LogerKill" ] then     
                 if IsValid(aid) then        
@@ -12314,6 +12377,21 @@ function ultimate.entity_killed(data)
     end
 
     if aid == me and aid != vid and !vid:IsNPC() and (vid:IsPlayer() or vid:IsBot() ) then
+
+        if ultimate.cfg.vars["WA"] then
+            ultimate.killstreak = ultimate.killstreak  + 1
+            if ultimate.killstreak == 1 then
+                surface_PlaySound(ultimate.killstreakSound[1][math.random(#ultimate.killstreakSound[1])])
+            elseif ultimate.killstreak == 3 then
+                surface_PlaySound(ultimate.killstreakSound[2][math.random(#ultimate.killstreakSound[2])])
+            elseif ultimate.killstreak == 6 then
+                surface_PlaySound(ultimate.killstreakSound[3][math.random(#ultimate.killstreakSound[3])])
+            elseif ultimate.killstreak == 11 then
+                surface_PlaySound(ultimate.killstreakSound[4][math.random(#ultimate.killstreakSound[4])])
+            elseif ultimate.killstreak == 25 then
+                surface_PlaySound(ultimate.killstreakSound[5][math.random(#ultimate.killstreakSound[5])])
+            end
+        end
 
         if ultimate.cfg.vars["Loger"] then        
             if ultimate.cfg.vars[ "LogerKill" ] then                    
