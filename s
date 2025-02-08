@@ -11194,8 +11194,13 @@ function ultimate.player_hurt(data)
             for hitboxGroupId = 0, hurted:GetHitboxSetCount() - 1 do
                 for hitboxId = 0, hurted:GetHitBoxCount(hitboxGroupId) - 1 do
                     local boneId = hurted:GetHitBoxBone(hitboxId, hitboxGroupId)
+                    if not boneId or boneId == -1 then
+                        return continue 
+                    end
                     local boneMat = hurted:GetBoneMatrix(boneId)
-
+                    if not boneMat then
+                        return continue
+                    end
                     local bonePos = boneMat:GetTranslation()
                     local boneAng = boneMat:GetAngles()
 
@@ -11214,6 +11219,7 @@ function ultimate.player_hurt(data)
                 hitboxData = hitboxData
             }
         end
+
 
         if ultimate.cfg.vars["hit Effect"] then
             local vpos = hurted:GetPos()
