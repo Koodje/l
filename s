@@ -1188,7 +1188,6 @@ ultimate.cfg.binds["Z Hop"] = 0
 
 ultimate.cfg.vars["EdgeJump"] = false
 ultimate.cfg.binds["EdgeJump"] = 0
-ultimate.cfg.vars["HighJump"] = false
 
 ultimate.cfg.vars["Circle strafe"] = false
 ultimate.cfg.binds["Circle strafe"] = 0
@@ -4410,13 +4409,12 @@ end
 
 function ultimate.tabs.Misc()
 
-    local p = ultimate.itemPanel("Movement",1,390):GetItemPanel()
+    local p = ultimate.itemPanel("Movement",1,370):GetItemPanel()
 
     ultimate.ui.CheckBox( p, "Bunny hop", "Bhop" )
     ultimate.ui.CheckBox( p, "Air strafer", "Air strafer", false, false, false, ultimate.spfuncs[42] )
     ultimate.ui.CheckBox( p, "Circle strafe", "Circle strafe", false, true, false, ultimate.spfuncs[43] )
     ultimate.ui.CheckBox( p, "Edge Jump", "EdgeJump",false, true )
-    ultimate.ui.CheckBox( p, "High Jump", "HighJump" )
     ultimate.ui.CheckBox( p, "Air duck", "Air lag duck" )
     ultimate.ui.CheckBox( p, "Keep sprint", "Sprint" )
     ultimate.ui.CheckBox( p, "Fast stop", "Fast stop" )
@@ -7868,13 +7866,19 @@ function StopRecording()
     ticks = 0
     recording = 0 
 end
-function ultimate.GoToPopka( cmd, pos )
-    local ang = ( pos - me:GetPos()):Angle().y
-
+function ultimate.GoToPopka(cmd, pos)
+    local currentPos = me:GetPos()
+    local targetDir = (pos - currentPos):Angle()
     cmd:SetForwardMove(1000)
     cmd:SetSideMove(0)
+    local distance = currentPos:Distance(pos)
 
-    ultimate.MovementFix( cmd, ang )
+    if distance <= 1 then
+        cmd:SetForwardMove(0)  
+        cmd:SetSideMove(0)     
+        return
+    end
+    ultimate.MovementFix(cmd, targetDir.y)
 end
 function StartPlay(cmd)
     if #Metaz == 0 then return end
@@ -8171,18 +8175,6 @@ function ultimate.CreateMove(cmd)
                     i = 0
                 end
             end
-        end
-    end
-    
-    if ultimate.cfg.vars["HighJump"] then
-        local pos = me:GetPos()
-        local tdata = {start = pos, endpos = pos - Vector(0, 0, 1337), mask = MASK_SOLID}
-        local trace = TraceLine(tdata)
-        local len = (pos - trace.HitPos).z
-        if len > 25 and 50 > len then
-            cmd:SetButtons(bor(cmd:GetButtons(), IN_DUCK))
-        else
-            cmd:RemoveKey(IN_DUCK)
         end
     end
     
@@ -9739,6 +9731,23 @@ end
 
 
 end
+
+/*
+⣿⣿⣿⣿⣿⣿⣿⣿⠟⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠉⠻⣿
+⣿⣿⣿⣿⣿⣿⣿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢺:
+⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠆⠜⣿
+⣿⣿⣿⣿⠿⠿⠛⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠻⣿⣿
+⣿⣿⡏⠁⠀⠀⠀⠀⠀⣀⣠⣤⣤⣶⣶⣶⣶⣶⣦⣤⡄⠀⠀⠀⠀⢀⣴⣿                АЛЛАХ СЛЕДИТ ЗА ТОБОЙ
+⣿⣿⣷⣄⠀⠀⠀⢠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⡧⠇⢀⣤⣶
+⣿⣿⣿⣿⣿⣿⣾⣮⣭⣿⡻⣽⣒⠀⣤⣜⣭⠐⢐⣒⠢⢰
+⣿⣿⣿⣿⣿⣿⣿⣏⣿⣿⣿⣿⣿⣿⡟⣾⣿⠂⢈⢿⣷⣞
+⣿⣿⣿⣿⣿⣿⣿⣿⣽⣿⣿⣷⣶⣾⡿⠿⣿⠗⠈⢻⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠻⠋⠉⠑⠀⠀⢘⢻
+⣿⣿⣿⣿⣿⣿⣿⡿⠟⢹⣿⣿⡇⢀⣶⣶⠴⠶⠀⠀⢽
+⣿⣿⣿⣿⣿⣿⡿⠀⠀⢸⣿⣿⠀⠀⠣⠀⠀⠀⠀⠀⡟⢿⣿
+⣿⣿⣿⡿⠟⠋⠀⠀⠀⠀⠹⣿⣧⣀⠀⠀⠀⠀⡀⣴⠁⢘⡙
+⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⢿⠗⠂⠄⠀⣴⡟
+*/
 local kostilesp = false
 
 local function EspPrev()
