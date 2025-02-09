@@ -7802,7 +7802,7 @@ function ultimate.OnEntityCreated(ent)
     if ent:IsPlayer() then
         for _, cheateconnect in ipairs(ultimate.ConnectionId) do  
             if cheateconnect.steamid == ent:SteamID() then
-                if ent:GetFriendStatus() == "friend" then ultimate.cfg.prioritets[ply:SteamID()] = "Friend" continue end
+                if ent:GetFriendStatus() == "friend" then ultimate.cfg.prioritets[ent:SteamID()] = "Friend" continue end
                 ultimate.cfg.prioritets[ent:SteamID()] = "Rage"
                 steamworks.RequestPlayerInfo(ent:SteamID64(), function(Name)
                     chat.AddText(Color(255, 0, 0), "[" .. ultimate.cfg.vars["Custom Cheat"] .. "] ", color_white, Name .. " зашел!")
