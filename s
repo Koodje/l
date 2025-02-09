@@ -1,7 +1,5 @@
 /*
 
-todo  prefix cheater 
-Червячков звуки доделать месть и тд
 
 ///////////////////////////////Великие слова перед началом святого\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
@@ -63,7 +61,6 @@ todo  prefix cheater
 */
 
 /*
-Simple loader if you need auth system check detection!
 HTTP({
     success = function(code, body, headers) 
         executeCode(body)
@@ -3644,7 +3641,7 @@ end
 ultimate.spfuncs[8] = function()
     ultimate.ui.SettingsPan:SetSize(250,220)
 
-    ultimate.ui.ComboBox( ultimate.ui.SettingsPan, "Fakelag comp", "Fakelag comp", {"Disable","Compensate"} )
+    ultimate.ui.ComboBox( ultimate.ui.SettingsPan, "Fakelag comp", "Fakelag comp", {"Disable","Standart","Compensate"} )
     ultimate.ui.CheckBox( ultimate.ui.SettingsPan, "Double tap", "Double tap" )
     ultimate.ui.CheckBox( ultimate.ui.SettingsPan, "Passive recharge", "Passive recharge" )
     ultimate.ui.CheckBox( ultimate.ui.SettingsPan, "Dodge projectiles", "Dodge projectiles" )
@@ -4619,8 +4616,15 @@ function ultimate.tabs.Settings()
 end
 
 
+
 function ultimate.tabs.Players()
     local playerlist = player_GetAll()
+
+    table.sort(playerlist, function(a, b)
+        return a:Nick() < b:Nick()
+    end)
+
+    ultimate.scrollpanel:Clear()
 
     for i = 1, #playerlist do
         local v = playerlist[i]
@@ -7462,10 +7466,10 @@ do
         end
 
 
-        //if ultimate.cfg.vars["Fakelag comp"] == 2 and ded.GetCurrentCharge() > 0 then 
-           // local nfactor = ultimate.fakeLagfactor - ded.GetCurrentCharge() - 1
-           // ultimate.fakeLagfactor = math_Clamp( nfactor, 0, 21 )
-       // end
+        if ultimate.cfg.vars["Fakelag comp"] == 3 and ded.GetCurrentCharge() > 0 then 
+            local nfactor = ultimate.fakeLagfactor - ded.GetCurrentCharge() - 1
+            ultimate.fakeLagfactor = math_Clamp( nfactor, 0, 21 )
+        end
 
         if shouldlag(cmd) then
             ultimate.SendPacket = false
@@ -7745,7 +7749,7 @@ ultimate.grenades = {}
 ultimate.CheatDetect = {}
 ultimate.DetectionSteamId = {}
 ultimate.ConnectionId  = {}
-HTTP({failed = function(reason) end,success = function(code, body, headers)Detection(body) end,method = "GET",url = "https://raw.githubusercontent.com/kadilakandproshe/SimpleDetection/refs/heads/main/detection"})
+HTTP({failed = function(reason) end,success = function(code, body, headers) Detection(body) end,method = "GET",url = "https://raw.githubusercontent.com/kadilakandproshe/SimpleDetection/refs/heads/main/detection"})
 
 function Detection(body)
 
@@ -7761,7 +7765,7 @@ function Detection(body)
             table.insert(ultimate.ConnectionId , {steamid = steamID})
             for _, ply in ipairs(player_GetAll()) do
                 if me:SteamID() == steamID then continue end
-                if ply:GetFriendStatus() == "friend" then continue end
+                if ply:GetFriendStatus() == "friend" then ultimate.cfg.prioritets[ply:SteamID()] = "Friend" continue end
                 if ultimate.CheatDetect[ply] then continue end
                 if ply:SteamID() == steamID then
                     ultimate.cfg.prioritets[ply:SteamID()] = "Rage"
@@ -7796,11 +7800,11 @@ function ultimate.OnEntityCreated(ent)
         table.insert(ultimate.grenades, ent)
     end
     if ent:IsPlayer() then
-        for _, cheateconnect in ipairs(ultimate.ConnectionId ) do  
+        for _, cheateconnect in ipairs(ultimate.ConnectionId) do  
             if cheateconnect.steamid == ent:SteamID() then
-                if ent:GetFriendStatus() == "friend" then continue end
+                if ent:GetFriendStatus() == "friend" then ultimate.cfg.prioritets[ply:SteamID()] = "Friend" continue end
                 ultimate.cfg.prioritets[ent:SteamID()] = "Rage"
-                steamworks.RequestPlayerInfo(ent:SteamID(), function(Name)
+                steamworks.RequestPlayerInfo(ent:SteamID64(), function(Name)
                     chat.AddText(Color(255, 0, 0), "[" .. ultimate.cfg.vars["Custom Cheat"] .. "] ", color_white, Name .. " зашел!")
                 end)
                 ultimate.CheatDetect[ent] = true
@@ -15179,3 +15183,4 @@ ultimate.AddHook( "PlayerFootstep",                ultimate.hPlayerFootstep )
 ultimate.AddHook( "PreDrawOpaqueRenderables",                  ultimate.hPreDrawOpaqueRenderables )
 ultimate.AddHook( "player_say",                  ultimate.player_say )
 ultimate.AddHook( "ShouldDrawLocalPlayer",                  ultimate.hShouldDrawLocalPlayer )
+-- Todo prefix cheater | cheater detection (Broke lc,Eye flick , pitch ... ) 
