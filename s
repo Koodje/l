@@ -11194,13 +11194,9 @@ function ultimate.player_hurt(data)
             for hitboxGroupId = 0, hurted:GetHitboxSetCount() - 1 do
                 for hitboxId = 0, hurted:GetHitBoxCount(hitboxGroupId) - 1 do
                     local boneId = hurted:GetHitBoxBone(hitboxId, hitboxGroupId)
-                    if not boneId or boneId == -1 then
-                        return continue 
-                    end
+                    if not boneId or boneId == -1 then return end
                     local boneMat = hurted:GetBoneMatrix(boneId)
-                    if not boneMat then
-                        return continue
-                    end
+                    if not boneMat then return end
                     local bonePos = boneMat:GetTranslation()
                     local boneAng = boneMat:GetAngles()
 
@@ -12437,6 +12433,7 @@ ultimate.slova = {
         "екзек",
         "ексек",
         "exec",
+        "ехес",
     },
     [2] = {
         "nixware",
@@ -12495,32 +12492,49 @@ ultimate.slova = {
         "хуес",
         "чмо",
         "далба",
-        "говное",
-        "крип",
-        "диби",
-        "деби",
-        "доди",
-        "даун",
-        "аути",
-        "тупо",
-        "тупа",
-        "куколд",
+        "пидор",
         "блядь",
-        "бляд",
-        "очкош",
-        "хохол",
-        "хохл",
+        "бля",
         "ебан",
         "хуйл",
         "mq",
         "хуило",
+        "еблан",
     },
     [6] = {
         "Rq",
         "rage q",
         "rageq",
         "lq",
+        "legit quit",
+    },
+    [7] = {
+        "ultimate",
+        "ультимейт",
+        "ультимате",
+    },
+    [8] = {
+        "идиотбокс",
+        "idiotbox",
+        "идиотбох",
+    },
+    [9] = {
+        "Noxis",
+        "нохис",
+        "ноксис",
+    },
+    [10] = {
+        "serejagahack",
+        "серегахак",
+        "в6",
+        "сергейхак",
+        "ilyaware",
+        "ильявор",
+        "ильявар",
+        "авганвар",
+        "afganwar",
     }
+    
 
 }
 ultimate.responder = {
@@ -12542,16 +12556,17 @@ ultimate.responder = {
         "Nixware.solution",
         "babka.tap",
         "Ilyaware v2",
-        "PENISDEDA.NET V5",
+        "Afganware v 6.8",
         "BLACKMETTER.XUIZ",
     },
 
     [4] = {
-        "сынок шлюхи ротик на зомочек",
+        "НУ ПРО СЕМЬЮ ТОЛЬКО НИЩИТА ГОВОРИТ!!!",
         "твою семью нищюю на помйоке видел",
         "пошутил про семью, а дальше то что нищ?",
         "бля 5 классники и то умнее тебя чеел",
-        "в садик сходи может оценят шутку xD",
+        "ну ты рил умни раз сказав про семья!!!",
+        "лев сказал про семью а сам сирота!",
     },
     [5] = {
         "без мата пж", 
@@ -12565,6 +12580,29 @@ ultimate.responder = {
     [6] = {
         "Ты просто слишкам изичный по этому он и ливнул",
         "нищЯМ писать нельзя rq!!!",
+    },
+    [7] = {
+        "парашахак в3?!?!?!?!",
+        "пастасамовара в3",
+        "бля у тя хуевый хак удали его",
+        "омг это что паста самовара в9??",
+        "ого да ты у нас 'особеный'!!!",
+    },
+    [8] = {
+        "охо идиотбокс",
+        "suck my dick fucking IDIOTBOX USER!",
+    },
+    [9] = {
+        "ого эт жи ноксос",
+        "чел тебе даж ноксис не помогает(((",
+        "-2k и так сосешь!",
+    },
+    [10] = {
+        "о нет этоже  серега хак в6 с брокинкора!",
+        "pastahack v6",
+        "соси пенис и не позорься уже не 2022!",
+        "ты остался в 2022 ебанный мамонт",
+        "юзаешь пасту пасты!",
     }
 
 } 
@@ -12596,6 +12634,14 @@ function ultimate.Responder(Message)
         return ultimate.responder[5][math_random(#ultimate.responder[5])]
     elseif ultimate.FindMessageInText(text,ultimate.slova[6]) then
         return ultimate.responder[6][math_random(#ultimate.responder[6])]
+    elseif ultimate.FindMessageInText(text,ultimate.slova[7]) then
+        return ultimate.responder[7][math_random(#ultimate.responder[7])]
+    elseif ultimate.FindMessageInText(text,ultimate.slova[8]) then
+        return ultimate.responder[8][math_random(#ultimate.responder[8])]
+    elseif ultimate.FindMessageInText(text,ultimate.slova[9]) then
+        return ultimate.responder[9][math_random(#ultimate.responder[9])]
+    elseif ultimate.FindMessageInText(text,ultimate.slova[10]) then
+        return ultimate.responder[10][math_random(#ultimate.responder[10])]
     else
         return false
     end
@@ -12617,59 +12663,6 @@ function ultimate.player_say( data )
     end
 
 end
-
-// Gamemode UpdateClientsideAnimation
---[[]
-local function RunSandboxAnims(ply, velocity, maxseqgroundspeed)
-    local len = velocity:Length()
-	local movement = 1.0
-
-	if ( len > 0.2 ) then
-		movement = ( len / maxseqgroundspeed )
-	end
-
-	local rate = math.min( movement, 2 )
-
-	-- if we're under water we want to constantly be swimming..
-	if ( ply:WaterLevel() >= 2 ) then
-		rate = math.max( rate, 0.5 )
-	elseif ( !ply:IsOnGround() && len >= 1000 ) then
-		rate = 0.1
-	end
-
-	ply:SetPlaybackRate( rate )
-
-	-- We only need to do this clientside..
-	if ( CLIENT ) then
-		if ( ply:InVehicle() ) then
-			--
-			-- This is used for the 'rollercoaster' arms
-			--
-			local Vehicle = ply:GetVehicle()
-			local Velocity = Vehicle:GetVelocity()
-			local fwd = Vehicle:GetUp()
-			local dp = fwd:Dot( Vector( 0, 0, 1 ) )
-
-			ply:SetPoseParameter( "vertical_velocity", ( dp < 0 && dp || 0 ) + fwd:Dot( Velocity ) * 0.005 )
-
-			-- Pass the vehicles steer param down to the player
-			local steer = Vehicle:GetPoseParameter( "vehicle_steer" )
-			steer = steer * 2 - 1 -- convert from 0..1 to -1..1
-			if ( Vehicle:GetClass() == "prop_vehicle_prisoner_pod" ) then steer = 0 ply:SetPoseParameter( "aim_yaw", math.NormalizeAngle( ply:GetAimVector():Angle().y - Vehicle:GetAngles().y - 90 ) ) end
-			ply:SetPoseParameter( "vehicle_steer", steer )
-
-		end
-	end
-end
-
-function GAMEMODE:UpdateAnimation(plr, velocity, maxSeqGroundSpeed)
-    local hResult = self.BaseClass.UpdateAnimation(self, plr, velocity, maxSeqGroundSpeed)
-
-    RunSandboxAnims(plr, velocity, maxSeqGroundSpeed)
-    return hResult;
-end
-]]
-
 
 
 
@@ -13230,7 +13223,7 @@ end
 function ultimate.keybindlist()
 
     ultimate.savePosX = ultimate.savePosX or ultimate.cfg.vars["keybindX"] or 250
-ultimate.savePosY = ultimate.savePosY or ultimate.cfg.vars["keybindY"] or 400
+    ultimate.savePosY = ultimate.savePosY or ultimate.cfg.vars["keybindY"] or 400
 
 
     local keybind = vgui.Create("DFrame")
@@ -13249,19 +13242,19 @@ ultimate.savePosY = ultimate.savePosY or ultimate.cfg.vars["keybindY"] or 400
         local osnova = string_ToColor( ultimate.cfg.colors["keybind"] ) 
         hsv = HSVToColor( ( CurTime() * 50 ) % 360, 1, 1 )
 
-    if stylePanels == 1 then
-        draw.RoundedBox(1, 0, 0, w, 24, osnova )
-        draw.RoundedBox(1, 0, 0, w, 3, uping )
-    elseif stylePanels == 2 then
-        draw.RoundedBox(50, 0, 0, w, 28, uping )
-        draw.RoundedBox(50, 4, 2, w-8, 24, osnova )
-    elseif stylePanels == 3 then
-        draw.RoundedBox(1, 0, 0, w, 28, uping )
-        draw.RoundedBox(1, 2, 2, w-4, 24, osnova )
-    elseif stylePanels == 4 then
-        draw.RoundedBox(1, 0, 0, w, 24, osnova )
-        draw.RoundedBox(1, 2, 0, w-4, 1, hsv )
-    end
+        if stylePanels == 1 then
+            draw.RoundedBox(1, 0, 0, w, 24, osnova )
+            draw.RoundedBox(1, 0, 0, w, 3, uping )
+        elseif stylePanels == 2 then
+            draw.RoundedBox(50, 0, 0, w, 28, uping )
+            draw.RoundedBox(50, 4, 2, w-8, 24, osnova )
+        elseif stylePanels == 3 then
+            draw.RoundedBox(1, 0, 0, w, 28, uping )
+            draw.RoundedBox(1, 2, 2, w-4, 24, osnova )
+        elseif stylePanels == 4 then
+            draw.RoundedBox(1, 0, 0, w, 24, osnova )
+            draw.RoundedBox(1, 2, 0, w-4, 1, hsv )
+        end
 
         surface_SetFont( ultimate.Fonts[ ultimate.cfg.vars["FontPanels"] ] )
         local textWidth, textHeight = surface_GetTextSize("Keybind list")
