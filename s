@@ -513,10 +513,6 @@ ultimate.cfg.vars["Smg grenade prediction"]     = false
 ultimate.cfg.vars["AR2 Orb prediction"]     = false
 
 ultimate.cfg.vars["Projectile aimbot"]          = false
-ultimate.cfg.vars["Prop aimbot"]                = false
-ultimate.cfg.vars["PA thrower"]                 = false
-ultimate.cfg.vars["PA thrower dist"]            = 128
-ultimate.cfg.vars["Prop max simtime"]           = 4
 
 // Misc
 
@@ -3692,11 +3688,6 @@ function ultimate.tabs.Aimbot()
     ultimate.ui.CheckBox( p, "Smg grenade prediction", "Smg grenade prediction" )
     ultimate.ui.CheckBox( p, "AR2 Orb prediction", "AR2 Orb prediction" ) 
 
-    //ultimate.ui.CheckBox( p, "Prop aimbot", "Prop aimbot" )
-    //ultimate.ui.CheckBox( p, "Auto throw", "PA thrower" )
-    //ultimate.ui.Slider( p, "Throw distance", "PA thrower dist", 1, 640, 0 )
-    //ultimate.ui.Slider( p, "Max simulation time", "Prop max simtime", 1, 10, 2 )
-    //ultimate.ui.CheckBox( p, "Projectile aimbot", "Projectile aimbot" )
 
     local p = ultimate.itemPanel( "Misc", 2, 120 ):GetItemPanel()
 
@@ -6079,11 +6070,12 @@ function ultimate.CrossbowPred( cmd )
 
         cmd:SetViewAngles( finalAng )
     end
+    if ultimate.cfg.vars["Auto fire"] then
+        cmd:AddKey( IN_ATTACK ) 
+    end
 end
 
 function ultimate.SMG( cmd )
-    if not ultimate.CanShoot( cmd ) then return end
-
     local plys = ultimate.GetSortedPlayers( ultimate.cfg.vars["Target selection"] )
 
     if !plys then return end
@@ -6143,8 +6135,6 @@ function ultimate.SMG( cmd )
 end
 
 function ultimate.AR2( cmd )
-    if not ultimate.CanShoot( cmd ) then return end
-
     local plys = ultimate.GetSortedPlayers( ultimate.cfg.vars["Target selection"] )
 
     if !plys then return end
@@ -6233,139 +6223,6 @@ function ultimate.DrawPhysgunBeamFunc( ply, wep, e, tar, bone, hitpos )
     if ply != me then return end 
 
     ultimate.grabbingEnt = IsValid( tar ) and tar or false
-end
-
-ultimate.predictedPoint = {}
-function ultimate.PropAim( cmd )
-    if not ultimate.grabbingEnt or not IsValid( ultimate.grabbingEnt ) or not cmd:KeyDown( IN_ATTACK ) then return end
-
-    local plys = ultimate.GetSortedPlayers( ultimate.cfg.vars["Target selection"] )
-    ultimate.target = false
-    ultimate.targetVector = false
-
-    if !plys then return end
-
-    for i = 1, #plys do
-        local ply           = plys[i][1]
-
-        local eyePos        = me:EyePos() 
-
-        local plyPos        = ply:GetPos()
-        local plyVel        = ply:GetVelocity()
-        local plyCenter     = ply:OBBCenter()
-        local plySpeed      = plyVel:Length()
-        //local plyPred       = plyPos + plyVel * TickInterval
-
-        local propPos       = ultimate.grabbingEnt:GetPos()
-        local propVel       = ultimate.grabbingEnt:GetVelocity()
-        local propSpeed     = propVel:Length()
-
-        local distance      = plyPos:Distance( propPos )
-        local plydist       = plyPos:Distance( eyePos )
-
-        if plydist >= 4096 then continue end
-
-        local travelTime    = distance / propSpeed
-        //local predTime      = ( ded.GetLatency( 0 ) + ded.GetLatency( 1 ) ) + travelTime
-
-        if travelTime > ultimate.cfg.vars["Simulation limit"] then continue end // predTime
-
-        // Prediction
-
-        ded.StartSimulation( ply:EntIndex() )
-
-        for i = 1, ultimate.TIME_TO_TICKS( travelTime ) do // predTime
-            ded.SimulateTick()
-        end
-
-        local data          = ded.GetSimulationData()
-        local aimPos        = data.m_vecAbsOrigin + plyCenter
-
-        distance            = aimPos:Distance( propPos )
-        travelTime          = distance / propSpeed
-
-        ded.FinishSimulation()
-
-        // Mouse wheel shit
-
-        local deltaDistance = plydist - distance
-        local scrollDelta = -deltaDistance
-
-        // Aim
-
-        local aimAng        = ( aimPos - me:EyePos() ):Angle()
-        aimAng:Normalize()
-
-        cmd:SetMouseWheel( scrollDelta ) 
-        cmd:SetViewAngles( aimAng )
-
-        /* Method 1
-        local scrollDelta = 0
-
-        if distance == 0 then
-            scrollDelta = 0
-        elseif propSpeed > plySpeed then
-            scrollDelta = - ( distance / propSpeed )
-        else
-            scrollDelta = distance / plySpeed
-        end
-        */
-
-
-        /*
-
-
-
-        
-        local predticks = ultimate.TIME_TO_TICKS( ded.GetLatency(0) + ded.GetLatency(1) ) + 1
-
-        ded.StartSimulation( ply:EntIndex() )
-
-        for i = 1, predticks do
-            ded.SimulateTick()
-        end
-
-        local data = ded.GetSimulationData()
-
-        pos = data.m_vecAbsOrigin + ply:OBBCenter()
-
-        ded.FinishSimulation()
-
-        local dist = pos:DistToSqr( me:EyePos() )
-
-        local clr = dist < 16777216 and Color( 0, 255, 0 ) or Color( 255, 0, 0 )
-
-        debugoverlay.Line( pos, ultimate.grabbingEnt:GetPos(), 0.1, clr, true )
-        debugoverlay.Box( pos - ply:OBBCenter(), ply:OBBMins(), ply:OBBMaxs(), 0.1, Color( 255, 15, 15, 32 ) )
-
-        if dist >= 16777216 then continue end
-
-        local aimAng = ( pos - me:EyePos() ):Angle()
-        local ppd = ultimate.grabbingEnt:GetPos():DistToSqr( pos )
-
-        local cd = ultimate.cfg.vars["PA thrower dist"]
-        if ppd < ( cd * cd ) and ultimate.cfg.vars["PA thrower"] then
-            cmd:RemoveKey( IN_ATTACK )
-        end
-
-        local bmd = math_sqrt( dist - ppd )
-
-        if ( dist - ppd ) < 0 then bmd = 0 end 
-
-        local scrollDelta = math_ceil( bmd > 0 and -ppd or ppd )
-
-        if scrollDelta > 5000 then
-            scrollDelta = 5000
-        elseif scrollDelta < -5000 then
-            scrollDelta = -5000
-        end
-
-        print( "SDelta", scrollDelta, "BMD", bmd, "PPD", ppd )
-
-        cmd:SetMouseWheel( scrollDelta )
-        cmd:SetViewAngles( aimAng )
-        */
-    end
 end
 
 function ultimate.Aim(cmd)
@@ -8237,8 +8094,6 @@ function ultimate.CreateMove(cmd)
             ultimate.SMG( cmd )
         elseif ultimate.cfg.vars["AR2 Orb prediction"] and ultimate.activeWeaponClass == "weapon_ar2" then
             ultimate.AR2( cmd )
-        elseif ultimate.cfg.vars["Prop aimbot"] then
-            ultimate.PropAim(cmd)
         elseif not KostilRapidFire then
             ultimate.Aim(cmd)
         end 
