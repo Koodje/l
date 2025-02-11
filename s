@@ -5124,6 +5124,7 @@ end
 ultimate.CustomSpread = {}
 
 function ultimate.CustomSpread.swb(cmd, ang)
+    
     local vel = me:GetVelocity():Length()
     local dir = ang:Forward()
     local own = ultimate.activeWeapon.Owner 
@@ -5155,13 +5156,29 @@ function ultimate.CustomSpread.swb(cmd, ang)
         ultimate.activeWeapon.BaseCone = ultimate.activeWeapon.BaseCone * ( ultimate.activeWeapon.dt.State == SWB_AIMING and 0.9 or 0.75 )
     end
     
+    /* if new version
+    if ultimate.activeWeapon.AddSpread == nil then
+        ultimate.activeWeapon.AddSpread = 0
+    end
+
+    if ultimate.activeWeapon.SpreadWait == nil then
+        ultimate.activeWeapon.SpreadWait = CurTime()
+    end
+    
+    if ultimate.activeWeapon.AddSpreadSpeed == nil then
+        ultimate.activeWeapon.AddSpreadSpeed = 0
+    end
+    */
+
     ultimate.activeWeapon.CurCone = math_Clamp( ultimate.activeWeapon.BaseCone + ultimate.activeWeapon.AddSpread + ( vel / 10000 * ultimate.activeWeapon.VelocitySensitivity ) * ( ultimate.activeWeapon.dt.State == SWB_AIMING and ultimate.activeWeapon.meMobilitySpreadMod or 1 ) + own.ViewAff, 0, 0.09 + ultimate.activeWeapon.MaxSpreadInc )
+    
     
     if CurTime() > ultimate.activeWeapon.SpreadWait then
         ultimate.activeWeapon.AddSpread = math_Clamp( ultimate.activeWeapon.AddSpread - 0.005 * ultimate.activeWeapon.AddSpreadSpeed, 0, ultimate.activeWeapon.MaxSpreadInc )
         ultimate.activeWeapon.AddSpreadSpeed = math_Clamp( ultimate.activeWeapon.AddSpreadSpeed + 0.05, 0, 1 )
     end
 
+    
     local cone = ultimate.activeWeapon.CurCone
     if not cone then return ang end
 
@@ -5172,6 +5189,78 @@ function ultimate.CustomSpread.swb(cmd, ang)
     math.randomseed(cmd:CommandNumber())
     return ang - Angle(math.Rand(-cone, cone), math.Rand(-cone, cone), 0) * 25
 end
+
+/*
+OLD
+------------------------------------------------------------------------------------------------------------------------------------------
+function SWEP:CalculateSpread(vel)
+	aim = GetAimVector(self.Owner)
+	CT = CurTime()
+	
+	if not self.Owner.LastView then
+		self.Owner.LastView = aim
+		self.Owner.ViewAff = 0
+	else
+		self.Owner.ViewAff = Lerp(0.25, self.Owner.ViewAff, (aim - self.Owner.LastView):Length() * 0.5)
+		self.Owner.LastView = aim
+	end
+	
+	if self.dt.State == SWB_AIMING then
+		self.BaseCone = self.AimSpread
+		
+		if self.Owner.Expertise then
+			self.BaseCone = self.BaseCone * (1 - self.Owner.Expertise["steadyaim"].val * 0.0015)
+		end
+	else
+		self.BaseCone = self.HipSpread
+		
+		if self.Owner.Expertise then
+			self.BaseCone = self.BaseCone * (1 - self.Owner.Expertise["wepprof"].val * 0.0015)
+		end
+	end
+	
+	if self.Owner:Crouching() then
+		self.BaseCone = self.BaseCone * (self.dt.State == SWB_AIMING and 0.9 or 0.75)
+	end
+	
+	self.CurCone = math.Clamp(self.BaseCone + self.AddSpread + (vel / 10000 * self.VelocitySensitivity) * (self.dt.State == SWB_AIMING and self.AimMobilitySpreadMod or 1) + self.Owner.ViewAff, 0, 0.09 + self.MaxSpreadInc)
+	
+	if CT > self.SpreadWait then
+		self.AddSpread = math.Clamp(self.AddSpread - 0.005 * self.AddSpreadSpeed, 0, self.MaxSpreadInc)
+		self.AddSpreadSpeed = math.Clamp(self.AddSpreadSpeed + 0.05, 0, 1)
+	end
+end
+------------------------------------------------------------------------------------------------------------------------------------------
+NEW
+------------------------------------------------------------------------------------------------------------------------------------------
+function SWEP:GetCurrentCone(unpredicted)
+	local owner = self:GetOwner()
+	local state = self.dt.State
+
+	local basecone
+
+	if state == SWB_AIMING then
+		basecone = self.AimSpread
+
+		if owner.Expertise then
+			basecone = basecone * (1 - owner.Expertise["steadyaim"].val * 0.0015)
+		end
+	else
+		basecone = self.HipSpread
+
+		if owner.Expertise then
+			basecone = basecone * (1 - owner.Expertise["wepprof"].val * 0.0015)
+		end
+	end
+
+	local vel = self:GetOwner():GetVelocity():Length()
+	return math.Clamp(basecone + self:GetCurrentSpreadUpdate(unpredicted) +
+		(vel / 10000 * self.VelocitySensitivity) * (state == SWB_AIMING and self.AimMobilitySpreadMod or 1)
+		+ self:GetCurrentViewAffinity(unpredicted),
+	0, 0.09 + self.MaxSpreadInc)
+end
+*/
+
 
 function ultimate.CustomSpread.cw( cmd, ang )
     local cone = ultimate.activeWeapon.CurCone
@@ -6069,9 +6158,9 @@ function ultimate.CrossbowPred( cmd )
         debugoverlay.Line( plyPos + plyCenter, finalVec, 0.1, color_white, true )
 
         cmd:SetViewAngles( finalAng )
-    end
-    if ultimate.cfg.vars["Auto fire"] then
-        cmd:AddKey( IN_ATTACK ) 
+        if ultimate.cfg.vars["Auto fire"] then
+            cmd:AddKey( IN_ATTACK ) 
+        end
     end
 end
 
