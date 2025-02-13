@@ -1258,8 +1258,8 @@ ultimate.cfg.vars["Killsound"] = false
 ultimate.cfg.vars["Hitsound str"] = "phx/hmetal1.wav"
 ultimate.cfg.vars["Killsound str"] = "ambient/levels/canals/windchime2.wav"
 
-ultimate.cfg.vars["WA"] = false
-
+ultimate.cfg.vars["CustomSound"] = false
+ultimate.cfg.vars["CustomSoundtype"] = 1
 // Loger
 
 ultimate.cfg.vars[ "Loger" ] = false
@@ -4445,12 +4445,13 @@ function ultimate.tabs.Misc()
     ultimate.ui.CheckBox( p, "Auto responder", "AutoResponder" )
     ultimate.ui.ComboBox( p, "Group", "Chat group", { "None", "/OOC", "Advert", "Me", "Pm" })
 
-    local p = ultimate.itemPanel( "Markers", 2, 200 ):GetItemPanel()
+    local p = ultimate.itemPanel( "Markers", 2, 250 ):GetItemPanel()
     ultimate.ui.CheckBox( p, "Hitsound", "Hitsound" )
     ultimate.ui.TextEntry( "Sound path", "Hitsound str", p, 420 )
     ultimate.ui.CheckBox( p, "Killsound", "Killsound" )
     ultimate.ui.TextEntry( "Sound path", "Killsound str", p, 420 )
-    ultimate.ui.CheckBox( p, "Worms Armageddon sounds", "WA" )
+    ultimate.ui.CheckBox( p, "Custom sounds", "CustomSound" )
+    ultimate.ui.ComboBox( p, "type", "CustomSoundtype", { "Worms Armageddon", "ВАРФЕЙС КРОВЬ! НОЧЬЮ! БЕГИ!" })
 
     local p = ultimate.itemPanel("Loger",2,100):GetItemPanel()
     
@@ -11084,8 +11085,10 @@ function ultimate.player_hurt(data)
     local attackers = Player(data.attacker) 
 
     if hurted == me then
-        if ultimate.cfg.vars["WA"] then
-            surface_PlaySound(ultimate.hitAWsound[1][math.random(#ultimate.hitAWsound[1])])
+        if ultimate.cfg.vars["CustomSound"] then
+            if ultimate.cfg.vars["CustomSoundtype"] == 1 then
+                surface_PlaySound(ultimate.hitAWsound[1][math.random(#ultimate.hitAWsound[1])])
+            end
         end
         if ultimate.cfg.vars["Loger"] then 
             if ultimate.cfg.vars[ "LogerHit" ] then        
@@ -12212,21 +12215,39 @@ ultimate.DeathAWsound = {
         "ostavmenya.mp3",
         "tiobetomposjalesh.mp3",
         "tipodojdi.mp3",
-        "predatel.mp3",
         "bIX.mp3",
         "Trys.mp3",
     }
 }
-
+ultimate.DeathAWFriend = {
+    [1] = {
+        "predatel.mp3",
+    }
+}
+ultimate.MestSound = {
+    [1] = {
+        "ne.mp3",
+        "cky4no.mp3"
+        "mest.mp3"    
+    }
+}
+ultimate.mest = nil
 function ultimate.entity_killed(data)
 	local aid = Entity(data.entindex_attacker)	
 	local vid = Entity(data.entindex_killed)
-
+    	
     if vid == me then
 
-        if ultimate.cfg.vars["WA"] then
+        if ultimate.cfg.vars["CustomSound"] then
             ultimate.killstreak = 0
-            surface_PlaySound(ultimate.DeathAWsound[1][math.random(#ultimate.DeathAWsound[1])])
+            ultimate.mest = aid
+            if ultimate.cfg.vars["CustomSoundtype"] == 1 then
+                if aid:GetFriendStatus() == "friend" then	
+                    surface_PlaySound(ultimate.DeathAWFriend[1][math.random(#ultimate.DeathAWFriend[1])])
+                else
+                    surface_PlaySound(ultimate.DeathAWsound[1][math.random(#ultimate.DeathAWsound[1])])
+                end
+            end
         end
 
         if ultimate.cfg.vars["Loger"] then        
@@ -12255,18 +12276,24 @@ function ultimate.entity_killed(data)
 
     if aid == me and aid != vid and !vid:IsNPC() and (vid:IsPlayer() or vid:IsBot() ) then
 
-        if ultimate.cfg.vars["WA"] then
+        if ultimate.cfg.vars["CustomSound"] then
             ultimate.killstreak = ultimate.killstreak  + 1
-            if ultimate.killstreak == 1 then
-                surface_PlaySound(ultimate.killstreakSound[1][math.random(#ultimate.killstreakSound[1])])
-            elseif ultimate.killstreak == 3 then
-                surface_PlaySound(ultimate.killstreakSound[2][math.random(#ultimate.killstreakSound[2])])
-            elseif ultimate.killstreak == 6 then
-                surface_PlaySound(ultimate.killstreakSound[3][math.random(#ultimate.killstreakSound[3])])
-            elseif ultimate.killstreak == 11 then
-                surface_PlaySound(ultimate.killstreakSound[4][math.random(#ultimate.killstreakSound[4])])
-            elseif ultimate.killstreak == 25 then
-                surface_PlaySound(ultimate.killstreakSound[5][math.random(#ultimate.killstreakSound[5])])
+            if ultimate.cfg.vars["CustomSoundtype"] == 1 then
+                if ultimate.mest == vid then
+                    surface_PlaySound(ultimate.MestSound[1][math.random(#ultimate.MestSound[1])])
+                else
+                    if ultimate.killstreak == 1 then
+                        surface_PlaySound(ultimate.killstreakSound[1][math.random(#ultimate.killstreakSound[1])])
+                    elseif ultimate.killstreak == 3 then
+                        surface_PlaySound(ultimate.killstreakSound[2][math.random(#ultimate.killstreakSound[2])])
+                    elseif ultimate.killstreak == 6 then
+                        surface_PlaySound(ultimate.killstreakSound[3][math.random(#ultimate.killstreakSound[3])])
+                    elseif ultimate.killstreak == 11 then
+                        surface_PlaySound(ultimate.killstreakSound[4][math.random(#ultimate.killstreakSound[4])])
+                    elseif ultimate.killstreak == 25 then
+                        surface_PlaySound(ultimate.killstreakSound[5][math.random(#ultimate.killstreakSound[5])])
+                    end
+                end
             end
         end
 
