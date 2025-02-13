@@ -11075,6 +11075,7 @@ ultimate.hitAWsound = {
     }
 }
 
+
 function ultimate.player_hurt(data)
 
 
@@ -11087,7 +11088,9 @@ function ultimate.player_hurt(data)
     if hurted == me then
         if ultimate.cfg.vars["CustomSound"] then
             if ultimate.cfg.vars["CustomSoundtype"] == 1 then
-                surface_PlaySound(ultimate.hitAWsound[1][math.random(#ultimate.hitAWsound[1])])
+                if not ultimate.mestcheck then
+                    surface_PlaySound(ultimate.hitAWsound[1][math.random(#ultimate.hitAWsound[1])])
+                end
             end
         end
         if ultimate.cfg.vars["Loger"] then 
@@ -12231,7 +12234,9 @@ ultimate.MestSound = {
         "mest.mp3",
     }
 }
+
 ultimate.mest = nil
+ultimate.mestcheck = false
 function ultimate.entity_killed(data)
 	local aid = Entity(data.entindex_attacker)	
 	local vid = Entity(data.entindex_killed)
@@ -12280,8 +12285,11 @@ function ultimate.entity_killed(data)
             ultimate.killstreak = ultimate.killstreak  + 1
             if ultimate.cfg.vars["CustomSoundtype"] == 1 then
                 if ultimate.mest == vid then
+                    ultimate.mest = nil
+                    ultimate.mestcheck = true
                     surface_PlaySound(ultimate.MestSound[1][math.random(#ultimate.MestSound[1])])
                 else
+                    ultimate.mestcheck = false
                     if ultimate.killstreak == 1 then
                         surface_PlaySound(ultimate.killstreakSound[1][math.random(#ultimate.killstreakSound[1])])
                     elseif ultimate.killstreak == 3 then
