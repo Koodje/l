@@ -12228,7 +12228,7 @@ ultimate.MestSound = {
     [1] = {
         "ne.mp3",
         "cky4no.mp3",
-        "mest.mp3"    ,
+        "mest.mp3",
     }
 }
 ultimate.mest = nil
