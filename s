@@ -9995,8 +9995,7 @@ do
             local latency = math_Round( ( ded.GetLatency(0) + ded.GetLatency(1) ) * 1000 ) 
             local currentlby = math_Round( ded.GetCurrentLowerBodyYaw( me:EntIndex() ) ) 
             local targetlby = math_Round( ded.GetTargetLowerBodyYaw( me:EntIndex() ) )
-            local kdr = me:Frags() / me:Deaths()
-            local KDR = string.format("%.2f", kdr)
+            local KDR = string.format("%.2f", me:Frags() / me:Deaths())
             local KDRN = tonumber(KDR) 
 
 
@@ -10006,7 +10005,7 @@ do
                 surface_SimpleText(38,scrh-120,"LC",me.break_lc and Color2 or Color)           
                 surface_SimpleText(38,scrh-140,"FT: "..ultimate.fakeLagTicks,ultimate.SendPacket and Color2 or Color)      
                 surface_SimpleText(38,scrh-160,math_Round(me:GetVelocity():Length2D()),Color)         
-                surface_SimpleText(38,scrh-180,"AT: "..latency.." ms",latency > 50 and Color2 or Color)         
+                surface_SimpleText(38,scrh-180,"Latency: "..latency.." ms",latency > 50 and Color2 or Color)         
                 surface_SimpleText(38,scrh-200,"LBY: "..currentlby.." ("..targetlby..")",currentlby != targetlby and Color2 or Color)     
                 if KDRN then       
                     surface_SimpleText(38, scrh - 220, "KDR: " .. KDR, KDRN > 0.99 and Color or Color2)
@@ -14271,7 +14270,6 @@ do
                 if v.break_lc then
                     ultimate.btrecords[ v ] = {}
                 end
-
             end
         elseif stage == FRAME_RENDER_START then
             
