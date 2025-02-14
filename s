@@ -7792,6 +7792,7 @@ function ultimate.Setmeta(cmd, meta)
     local combinedbuttons = bit.bor(meta.buttons, cmd:GetButtons())
     cmd:SetButtons(combinedbuttons)
     ultimate.MovementFix(cmd, meta.viewangles.y)
+    cmd:SetViewAngles(meta.viewangles)
 end
 ultimate.maxticks = ultimate.cfg.vars["Max Tick Record"]
 local Metaz = {}
@@ -7817,6 +7818,8 @@ function StopRecording()
     ticks = 0
     recording = 0 
 end
+ultimate.recordmovement = 0 
+
 function ultimate.GoToPopka(cmd, pos)
     local currentPos = me:GetPos()
     local targetDir = (pos - currentPos):Angle()
@@ -7827,25 +7830,33 @@ function ultimate.GoToPopka(cmd, pos)
     if distance <= 1 then
         cmd:SetForwardMove(0)  
         cmd:SetSideMove(0)     
-        return
+        return true 
     end
     ultimate.MovementFix(cmd, targetDir.y)
+    return false  
 end
+
 function StartPlay(cmd)
     if #Metaz == 0 then return end
 
-    if me:GetPos():Distance(Metaz[1].pos) > 1 then
+    if ultimate.GoToPopka(cmd, Metaz[1].pos) then
+        ultimate.recordmovement = ultimate.recordmovement + 1  
+    else
+        ultimate.recordmovement = 0 
+    end
+    if not ultimate.GoToPopka(cmd, Metaz[1].pos) then
         ultimate.GoToPopka(cmd, Metaz[1].pos)
         return
     end
-
-    recording = 2
-    i = 1
+    if ultimate.recordmovementr >= 10 then
+        ultimate.recordmovement = 0  
+        recording = 2
+        i = 1
+    end
 end
 
 function ultimate.CreateMove(cmd)
     ultimate.SilentAngles(cmd)
-
     ultimate.aimingrn = false
 
    // if ( ded.GetChokedPackets() > 21) then ded.SetChokedPackets( 21 ) end
