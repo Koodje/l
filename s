@@ -7848,7 +7848,7 @@ function StartPlay(cmd)
         ultimate.GoToPopka(cmd, Metaz[1].pos)
         return
     end
-    if ultimate.recordmovementr >= 10 then
+    if ultimate.recordmovement >= 10 then
         ultimate.recordmovement = 0  
         recording = 2
         i = 1
