@@ -5548,13 +5548,11 @@ function ultimate.GetSortedPlayers( mode, selfpred, plypred, vischeck )
         
         if vischeck then
 			local bone = ultimate.GetBones( v )[1]
-            if IsValid(bone) then
-                local dir = me:GetShootPos() - bone
-                dir:Normalize()
+            local dir = me:GetShootPos() - bone
+            dir:Normalize()
 
-                if !ultimate.VisibleCheck( v, bone, selfpred, dir ) then
-                    continue
-                end
+            if !ultimate.VisibleCheck( v, bone, selfpred, dir ) then
+                continue
             end
 		end
 
