@@ -5548,12 +5548,14 @@ function ultimate.GetSortedPlayers( mode, selfpred, plypred, vischeck )
         
         if vischeck then
 			local bone = ultimate.GetBones( v )[1]
-			local dir = me:GetShootPos() - bone
-			dir:Normalize()
+            if IsValid(bone) then
+                local dir = me:GetShootPos() - bone
+                dir:Normalize()
 
-			if !ultimate.VisibleCheck( v, bone, selfpred, dir ) then
-				continue
-			end
+                if !ultimate.VisibleCheck( v, bone, selfpred, dir ) then
+                    continue
+                end
+            end
 		end
 
         local pos = v:GetPos()
@@ -5898,11 +5900,11 @@ ultimate.knifes[2] = {
 
     leftdmg = 10,
     leftdmgb = 10,
-    leftdist = 70*70,
+    leftdist = 60*60,
 
     rightdmg = 40,
     rightdmgb = 40,
-    rightdist = 70*70,
+    rightdist = 60*60,
 }
 
 ultimate.knifes[3] = {
@@ -13891,6 +13893,7 @@ do
         end
 
         if ultimate.cfg.vars["Movement recorder"] then
+            
             if ultimate.cfg.vars["Line recorder"] then
                 if #Metaz == 0 then return end
 
@@ -13908,6 +13911,7 @@ do
             if #Metaz > 0 then
                 local startPos = Metaz[1].pos
                 local endPos = Metaz[#Metaz].pos
+                
                 cam_Start3D2D( startPos, Angle(0, 0, 0), 1 )
                     surface.DrawCircle( 0, 0, 10, string_ToColor( ultimate.cfg.colors["Movement recorder"]  ))
                 cam_End3D2D ()
