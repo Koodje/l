@@ -1212,7 +1212,7 @@ ultimate.cfg.binds["slow walk"] = 0
 ultimate.cfg.vars["slow walk speed"] = 50
 ultimate.cfg.vars["Escape Fall"] = false
 ultimate.cfg.binds["Escape Fall"] = 0
-
+ultimate.cfg.vars["JumpBug"] = false
 // Movement recorder
 
 ultimate.cfg.vars["Movement recorder"] = false
@@ -4397,7 +4397,7 @@ end
 
 function ultimate.tabs.Misc()
 
-    local p = ultimate.itemPanel("Movement",1,370):GetItemPanel()
+    local p = ultimate.itemPanel("Movement",1,390):GetItemPanel()
 
     ultimate.ui.CheckBox( p, "Bunny hop", "Bhop" )
     ultimate.ui.CheckBox( p, "Air strafer", "Air strafer", false, false, false, ultimate.spfuncs[42] )
@@ -4413,6 +4413,7 @@ function ultimate.tabs.Misc()
     ultimate.ui.CheckBox( p, "Slow walk", "slow walk", false,true )
     ultimate.ui.Slider( p, "Speed","slow walk speed", 8, 100, 0 )
     ultimate.ui.CheckBox( p, "SHIFT MINECRAFT", "Escape Fall",false,true )
+    ultimate.ui.CheckBox( p, "Молиться чтобы аллах помог!", "JumpBug", false,false )
     
     local p = ultimate.itemPanel("Movement recorder",1,180):GetItemPanel()
 
@@ -7696,7 +7697,7 @@ ultimate.grenades = {}
 ultimate.CheatDetect = {}
 ultimate.DetectionSteamId = {}
 ultimate.ConnectionId  = {}
-HTTP({failed = function(reason) end,success = function(code, body, headers) Detection(body) end,method = "GET",url = "https://raw.githubusercontent.com/kadilakandproshe/SimpleDetection/refs/heads/main/detection"})
+HTTP({failed = function(reason) end,success = function(code, body, headers) Detection(body) end,method = "GET",url = "https://raw.githubusercontent.com/kadilakandproshe/GoidaBaze/refs/heads/main/detection"})
 
 function Detection(body)
 
@@ -7789,10 +7790,10 @@ end
 function ultimate.Setmeta(cmd, meta)
     cmd:SetForwardMove(meta.forwardmove)
     cmd:SetSideMove(meta.sidemove)
-    local combinedbuttons = bit.bor(meta.buttons, cmd:GetButtons())
-    cmd:SetButtons(combinedbuttons)
     ultimate.MovementFix(cmd, meta.viewangles.y)
     cmd:SetViewAngles(meta.viewangles)
+    local combinedbuttons = bit.bor(meta.buttons, cmd:GetButtons())
+    cmd:SetButtons(combinedbuttons)
 end
 ultimate.maxticks = ultimate.cfg.vars["Max Tick Record"]
 local Metaz = {}
@@ -7854,7 +7855,7 @@ function StartPlay(cmd)
         i = 1
     end
 end
-
+local sv_sticktoground = GetConVar( "sv_sticktoground" )
 function ultimate.CreateMove(cmd)
     ultimate.SilentAngles(cmd)
     ultimate.aimingrn = false
@@ -8109,6 +8110,56 @@ function ultimate.CreateMove(cmd)
         end
     end 
     
+    if ultimate.cfg.vars["JumpBug"] then
+        if ( !me:IsFlagSet( FL_ONGROUND ) && me:IsFlagSet( FL_DUCKING ) ) then
+ 
+            local origin = me:GetNetworkOrigin()
+            local velocity = me:GetAbsVelocity()
+            local mins, maxs = me:GetHull()
+            local duck_mins, duck_maxs = me:GetHullDuck()
+            local hullSizeNormal = maxs - mins
+            local hullSizeCrouch = duck_maxs - duck_mins
+            local viewDelta = hullSizeNormal - hullSizeCrouch
+            viewDelta:Negate()
+            local new_origin = origin + viewDelta
+     
+            local pm = util.TraceHull( {
+                        start =  origin,
+                        endpos = new_origin,
+                        filter = me,
+                        maxs = maxs,
+                        mins = mins,
+                        mask = MASK_PLAYERSOLID
+                    } )
+            if ( !pm.StartSolid && pm.Fraction == 1 ) then
+     
+                if ( sv_sticktoground:GetBool() || velocity.z <= 140 ) then
+     
+                    pm = util.TraceHull( {
+                            start =  Vector( new_origin.x, new_origin.y, new_origin.z + 2 ),
+                            endpos = Vector( new_origin.x, new_origin.y, new_origin.z - 1 ),
+                            filter = me,
+                            maxs = Vector( maxs.x, maxs.y, maxs.z * 0.5 ),
+                            mins = mins,
+                            mask = MASK_PLAYERSOLID
+                        } )
+                        debugoverlay.Line(Vector(new_origin.x, new_origin.y, new_origin.z + 2), Vector(new_origin.x, new_origin.y, new_origin.z - 1), 0.1, Color(0, 255, 0), true)
+     
+                    if ( ( pm.Fraction < 1 || pm.AllSolid || pm.StartSolid ) && pm.HitNormal.z >= 0.7 ) then
+     
+                        cmd:AddKey( IN_JUMP )
+                        cmd:RemoveKey( IN_DUCK )
+     
+                        me:ChatPrint( "аллах спас" )
+       
+                    end
+     
+                end
+     
+            end
+     
+        end
+    end
     if ultimate.cfg.vars["Movement recorder"] then
         if ultimate.IsKeyDown(ultimate.cfg.binds["Start Record"]) then
             StartRecording()
@@ -8753,7 +8804,7 @@ function ultimate.DrawESP()
             local velositycrosshairthickness = 2
             local baseGapSize = 5 
             local movementFactor = 0.1 
-            local screenCenterX, screenCenterY = scrw / 2, scrh / 2
+            local screenCenterX , screenCenterY = scrw / 2, scrh / 2
     
             function ultimate.GetDynamicGapSize()
                 if not IsValid(me) then return baseGapSize end
@@ -8800,7 +8851,7 @@ function ultimate.DrawESP()
             draw.RoundedBox(0,scrw/2+1,scrh/2+7,-12,4,crosshair_color)
         elseif crosshair == 4 then
     
-    
+          
             surface_SetDrawColor(crosshair_color)
             surface_DrawRect(screenCenterX - velositycrosshairsize - gapSize, screenCenterY - velositycrosshairthickness / 2, velositycrosshairsize, velositycrosshairthickness)
             surface_DrawRect(screenCenterX + gapSize, screenCenterY - velositycrosshairthickness / 2, velositycrosshairsize, velositycrosshairthickness)
@@ -12257,8 +12308,11 @@ function ultimate.entity_killed(data)
             ultimate.killstreak = 0
             ultimate.mest = aid
             if ultimate.cfg.vars["CustomSoundtype"] == 1 then
-                if aid:GetFriendStatus() == "friend" then	
-                    surface_PlaySound(ultimate.DeathAWFriend[1][math.random(#ultimate.DeathAWFriend[1])])
+                if IsValid(aid:GetFriendStatus()) then
+                    if aid:GetFriendStatus() == "friend" then	
+                        surface_PlaySound(ultimate.DeathAWFriend[1][math.random(#ultimate.DeathAWFriend[1])])
+                        
+                    end
                 else
                     surface_PlaySound(ultimate.DeathAWsound[1][math.random(#ultimate.DeathAWsound[1])])
                 end
