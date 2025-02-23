@@ -14100,7 +14100,7 @@ do
                             surface.DrawCircle(0, 0, radius,string_ToColor(ultimate.cfg.colors["Knifebot fov"]))
                         cam_End3D2D()
                     elseif ultimate.cfg.vars["Figureknifebot"] == 2 then
-                        render.DrawWireframeSphere( me:GetShootPos(), radius, 12, 12, color, false)
+                        render.DrawWireframeSphere( me:GetShootPos(), radius, 12, 12, string_ToColor(ultimate.cfg.colors["Knifebot fov"]), false)
                     end
                 end
             end
