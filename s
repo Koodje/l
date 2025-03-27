@@ -1,3 +1,4 @@
+
 /*
 
 
@@ -358,7 +359,7 @@ end
 function DrawGradientCircle(x, y, radius, seg)
     ultimate.cir = {}
     for i = 0, seg do
-        local a = math.rad((i / seg) * 360)
+        local a = MathRad((i / seg) * 360)
         local r = math.sin(a + CurTime()) * 127 + 128
         local g = math.sin(a + CurTime() + 2) * 127 + 128
         local b = math.sin(a + CurTime() + 4) * 127 + 128
@@ -4354,8 +4355,8 @@ function ultimate.tabs.Render()
     ultimate.ui.TextEntry( "Kill effect path", "Kill Effect str", p, 420 )
     ultimate.ui.CheckBox( p, "Hit effect", "hit Effect" )
     ultimate.ui.TextEntry( "Hit effect path", "hit Effect str", p, 420 )
-    ultimate.ui.CheckBox( p, "Hit hitboxes", "Hit HB", false , false , true )
-    ultimate.ui.Slider( p, "Hit hitboxes time","Hit HB time",0,5,0 )
+    ultimate.ui.CheckBox( p, "Hurt HitBoxes", "Hit HB", false , false , true )
+    ultimate.ui.Slider( p, "Hurt HitBoxes time","Hit HB time",0,5,0 )
     ultimate.ui.CheckBox( p, "Crosshair 3D", "Crosshair 3D", false, false, true,ultimate.spfuncs[31])
 
 end
@@ -8868,11 +8869,11 @@ function ultimate.DrawESP()
                 table.insert(cir, {x = x, y = y})
             
                 for i = 0, seg do
-                    local a = math.rad((i / seg) * -360)
+                    local a = MathRad((i / seg) * -360)
                     table.insert(cir, {x = x + math.sin(a) * radius, y = y + math.cos(a) * radius})
                 end
             
-                local a = math.rad(0)
+                local a = MathRad(0)
                 table.insert(cir, {x = x + math.sin(a) * radius, y = y + math.cos(a) * radius})
             
                 surface_DrawPoly(cir)
@@ -10255,7 +10256,7 @@ do
 
                 
                 for i = 1, 360 do
-                    local angle = math.rad(i)
+                    local angle = MathRad(i)
                     local x = scrwc + math.cos(angle) * (radius - 1)
                     local y = scrhc + math.sin(angle) * (radius - 1)
                     table.insert(circleVertices, {x = x, y = y})
@@ -11644,8 +11645,8 @@ ultimate.chatmsg = {
         "ТЫ ЛОХ А Я БОХ ",
         "ШтуЧка к кøТорøЙ◊тЯнуТся рУчКи",
         "-n๏ȼąȼέʍȼя? ",
-        "★А мНе ВсЁ пОфИг★",
-        "♠Не КиСнИ,в КоНтАкТе ЗаВиСнИ♥♠",
+        "★А мНе ВсЁ пОфИг★",
+        "♠Не КиСнИ,в КоНтАкТе ЗаВиСнИ♥♠",
         "ПуЛя_В_гЛаЗ_и_Ты_УнИТаЗ",
         "{X}o4y kak PR0™ moGy kak DNO",
         "!!!!ОР ВЫШЕ ГОР!!!!",
@@ -12764,6 +12765,7 @@ ultimate.actCommands = {"robot","muscle","laugh","bow","cheer","wave","becon","a
 // Name changer 
 
 do
+    
     local cooldown = GetConVarNumber("sv_namechange_cooldown_seconds")
     local curtime = CurTime()
     local lastname = me:Name()
@@ -12812,7 +12814,7 @@ do
 end
 
 
-
+--ded.ConVarSetValue("sv_showimpacts", 1)
 
 do
     local prioritychang
@@ -12916,6 +12918,7 @@ do
         inverterdown = ultimate.IsKeyDown( ultimate.cfg.binds["Inverter"] )
 
         ultimate.ekd = ultimate.IsKeyDown( ultimate.cfg.binds["Ent esp"] )
+        --print( LocalPlayer():GetEyeTrace().Entity )
 
 
 
@@ -12943,7 +12946,9 @@ do
             ded.ConVarSetValue("net_fakejitter", net_fakejitter)
             ded.ConVarSetValue("net_fakeloss", net_fakeloss)
             ded.ConVarSetValue("host_timescale", host_timescale)
-
+            
+            
+            
         end
         
 
@@ -13139,7 +13144,7 @@ function ultimate.CreateRadar()
             local pos = v:GetPos()
             local diff = pos - me:GetPos()
             diff.z = 0
-            local angle = math.rad(-ultimate.SilentAngle .y + 90)
+            local angle = MathRad(-ultimate.SilentAngle .y + 90)
             local cos = math.cos(angle)
             local sin = math.sin(angle)
             local x = diff.x * cos - diff.y * sin
