@@ -359,7 +359,7 @@ end
 function DrawGradientCircle(x, y, radius, seg)
     ultimate.cir = {}
     for i = 0, seg do
-        local a = MathRad((i / seg) * 360)
+        local a = math.rad((i / seg) * 360)
         local r = math.sin(a + CurTime()) * 127 + 128
         local g = math.sin(a + CurTime() + 2) * 127 + 128
         local b = math.sin(a + CurTime() + 4) * 127 + 128
@@ -8869,11 +8869,11 @@ function ultimate.DrawESP()
                 table.insert(cir, {x = x, y = y})
             
                 for i = 0, seg do
-                    local a = MathRad((i / seg) * -360)
+                    local a = math.rad((i / seg) * -360)
                     table.insert(cir, {x = x + math.sin(a) * radius, y = y + math.cos(a) * radius})
                 end
             
-                local a = MathRad(0)
+                local a = math.rad(0)
                 table.insert(cir, {x = x + math.sin(a) * radius, y = y + math.cos(a) * radius})
             
                 surface_DrawPoly(cir)
@@ -10256,7 +10256,7 @@ do
 
                 
                 for i = 1, 360 do
-                    local angle = MathRad(i)
+                    local angle = math.rad(i)
                     local x = scrwc + math.cos(angle) * (radius - 1)
                     local y = scrhc + math.sin(angle) * (radius - 1)
                     table.insert(circleVertices, {x = x, y = y})
@@ -13144,7 +13144,7 @@ function ultimate.CreateRadar()
             local pos = v:GetPos()
             local diff = pos - me:GetPos()
             diff.z = 0
-            local angle = MathRad(-ultimate.SilentAngle .y + 90)
+            local angle = math.rad(-ultimate.SilentAngle .y + 90)
             local cos = math.cos(angle)
             local sin = math.sin(angle)
             local x = diff.x * cos - diff.y * sin
