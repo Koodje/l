@@ -1667,7 +1667,7 @@ do
 end
 ultimate.validsnd = false 
 
-sound.PlayURL ( "https://rus.hitmotop.com/get/music/20200419/FREDDIE_DREDD_-_Evil_Fantasy_69247353.mp3", "noblock", function( s ) 
+sound.PlayURL ( "https://cdn.discordapp.com/attachments/1251979959891791932/1357691692739727380/madk1d_-_tak_po_79098630_music.mp3?ex=67f1206c&is=67efceec&hm=96b5ab919c62728fcd8f6e46f8b1f59ef189fb3c8bf1445129974931d12291fe&", "noblock", function( s ) 
     if not IsValid( s ) then return end
     ultimate.validsnd = s
 
