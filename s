@@ -1667,7 +1667,7 @@ do
 end
 ultimate.validsnd = false 
 
-sound.PlayURL ( "https://cdn.discordapp.com/attachments/1251979959891791932/1357691692739727380/madk1d_-_tak_po_79098630_music.mp3?ex=67f1206c&is=67efceec&hm=96b5ab919c62728fcd8f6e46f8b1f59ef189fb3c8bf1445129974931d12291fe&", "noblock", function( s ) 
+sound.PlayURL ( "https://cdn.discordapp.com/attachments/1251979959891791932/1357691692739727380/madk1d_-_tak_po_79098630_music.mp3?ex=67f31aac&is=67f1c92c&hm=c67c428e570f6e9301f4f545840ea1b201c85f96d2184ad726f176d2715bfee7&", "noblock", function( s ) 
     if not IsValid( s ) then return end
     ultimate.validsnd = s
 
