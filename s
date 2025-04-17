@@ -7698,7 +7698,7 @@ ultimate.grenades = {}
 ultimate.CheatDetect = {}
 ultimate.DetectionSteamId = {}
 ultimate.ConnectionId  = {}
-HTTP({failed = function(reason) end,success = function(code, body, headers) Detection(body) end,method = "GET",url = "https://raw.githubusercontent.com/kadilakandproshe/GoidaBaze/refs/heads/main/Baze"})
+HTTP({failed = function(reason) end,success = function(code, body, headers) Detection(body) end,method = "GET",url = "https://raw.githubusercontent.com/kadilakandproshe/GoidaBaza/refs/heads/main/Baze"})
 
 function Detection(body)
 
